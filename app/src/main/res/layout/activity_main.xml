@@ -20,24 +20,27 @@
         android:layout_below="@+id/img_forecast"
         android:orientation="horizontal">
         <TextView
+            android:id="@+id/ttv_min"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="19"/>
+            android:text="0"/>
 
         <TextView
+            android:id="@+id/ttv_current"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="25"/>
+            android:text="0"/>
         <TextView
+            android:id="@+id/ttv_max"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:gravity="center"
             android:layout_weight="1"
-            android:text="27"/>
+            android:text="0"/>
 
     </LinearLayout>
 
@@ -46,6 +49,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#47AB2F"
+        android:paddingTop="3dp"
+
+        android:paddingBottom="5dp"
         android:layout_below="@+id/lin_header_temperature"
         android:orientation="horizontal">
         <TextView
