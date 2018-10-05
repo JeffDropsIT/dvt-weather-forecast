@@ -16,7 +16,7 @@ public class Main {
     }
 
 
-    public long kelvinToCelsius(Double temperatureInKelvin){
+    private long kelvinToCelsius(Double temperatureInKelvin){
         //T(°C) = T(K) - 273.15
         double tempInCelsius = temperatureInKelvin - KELVIN_CONSTANT;
         Log.i("WSX", "kelvinToCelsius: "+Math.round(tempInCelsius));
@@ -35,16 +35,16 @@ public class Main {
         this.temp_min = temp_min;
     }
 
-    public Double getTemp() {
-        return temp;
+    public long getTemp() {
+        return kelvinToCelsius(temp);
     }
 
-    public Double getTemp_max() {
-        return temp_max;
+    public long getTemp_max() {
+        return kelvinToCelsius(temp_max);
     }
 
-    public Double getTemp_min() {
-        return temp_min;
+    public long getTemp_min() {
+        return kelvinToCelsius(temp_min);
     }
 
     @Override

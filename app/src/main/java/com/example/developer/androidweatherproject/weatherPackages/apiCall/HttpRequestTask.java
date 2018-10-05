@@ -24,15 +24,19 @@ import static com.example.developer.androidweatherproject.MainActivity.getStorag
 
 public class HttpRequestTask extends AsyncTask<String, Void, WeekForecast> {
     public static final String WEEK_DAYS = "weekDays";
+    public static final String CURRENT_STR = "currentStr";
+    public static final String MAX_STR = "maxStr";
+    public static final String MIN_STR = "minStr";
     private final String BASE_PATH = "http://api.openweathermap.org/data/2.5/forecast", appid = "0ba4a7729669b8c072c20f5daa13b4a9";
-    TextView ttvCurrent, ttvMin, ttvMax;
-    ArrayList<TextView> daysTextViewList;
-    public HttpRequestTask(TextView ttvCurrent, TextView ttvMin, TextView ttvMax, ArrayList<TextView> daysTextViewList){
-        this.ttvCurrent = ttvCurrent;
-        this.ttvMax = ttvMax;
-        this.ttvMin = ttvMin;
-        this.daysTextViewList = daysTextViewList;
+    private OnTaskCompleted listener;
+    public HttpRequestTask(OnTaskCompleted listener){
+        this.listener = listener;
     }
+
+    public HttpRequestTask() {
+
+    }
+
     @Override
     protected WeekForecast doInBackground(String... params) {
         try {
@@ -60,28 +64,36 @@ public class HttpRequestTask extends AsyncTask<String, Void, WeekForecast> {
     @Override
     protected void onPostExecute(WeekForecast weekForecast) {
 
+
+
         Main main = weekForecast.getList().get(0).getMain();
-        Double current = main.getTemp();
-        Double max = main.getTemp_max();
-        Double min = main.getTemp_min();
+        long current = main.getTemp();
+        long max = main.getTemp_max();
+        long min = main.getTemp_min();
 
 
-        String currentStr =  Long.toString(main.kelvinToCelsius(current));
-        String maxStr =  Long.toString(main.kelvinToCelsius(max));
-        String minStr =  Long.toString(main.kelvinToCelsius(min));
-        displayWeatherInfo(currentStr, minStr, maxStr);
+
+
         Log.i("WSX", "onPostExecute: "+weekForecast);
         Log.i("WSX", "onPostExecute: day of week"+weekForecast.getCurrentDay());
 
 
-
-        getStorageDBServer().putListString(WEEK_DAYS,weekForecast.getAllWeekDays() );
-        displayWeekDays(getStorageDBServer().getListString(WEEK_DAYS));
+        getStorageDBServer().putString(CURRENT_STR, Long.toString(current));
+        getStorageDBServer().putString(MAX_STR, Long.toString(max));
+        getStorageDBServer().putString(MIN_STR, Long.toString(min));
+        getStorageDBServer().putListString(WEEK_DAYS,weekForecast.getAllWeekDays());
         cacheWeatherData(weekForecast);
+
+
+        if(listener != null){
+            listener.onTaskCompleted();
+        }
 
     }
 
-
+    public interface OnTaskCompleted{
+        void onTaskCompleted();
+    }
     private void cacheWeatherData(WeekForecast weekForecast){
 
 
@@ -91,15 +103,14 @@ public class HttpRequestTask extends AsyncTask<String, Void, WeekForecast> {
             Main main = weekForecast.getList().get(i).getMain();
             WeatherObject weatherObject = weekForecast.getList().get(i);
 
-            Double current = main.getTemp();
-            Double max = main.getTemp_max();
-            Double min = main.getTemp_min();
+            long current = main.getTemp();
+            long max = main.getTemp_max();
+            long min = main.getTemp_min();
 
 
-
-            String currentStr =  Long.toString(main.kelvinToCelsius(current));
-            String maxStr =  Long.toString(main.kelvinToCelsius(max));
-            String minStr =  Long.toString(main.kelvinToCelsius(min));
+            String currentStr =  Long.toString(current);
+            String maxStr =  Long.toString(max);
+            String minStr =  Long.toString(min);
 
 
 
@@ -131,28 +142,6 @@ public class HttpRequestTask extends AsyncTask<String, Void, WeekForecast> {
 
     }
 
-    public void displayWeatherInfo(String current, String min, String max){
 
-        char degrees = (char) 0x00B0; // degree symbol
-        ttvCurrent.setText(current+degrees);
-        ttvMax.setText(max+degrees);
-        ttvMin.setText(min+degrees);
-    }
 
-    public void displayWeekDays(ArrayList<String> weekDays){
-        weekDays.remove(0);
-        if(!weekDays.isEmpty() && !daysTextViewList.isEmpty()){
-            if(weekDays.size() == daysTextViewList.size()){
-                for(int i = 0; i < daysTextViewList.size(); i++){
-                    daysTextViewList.get(i).setText(weekDays.get(i));
-                    Log.i("WSX", "day "+i);
-                }
-            }else {
-                Log.i("WSX", "displayWeekDays: something went wrong size does not match");
-            }
-        }else {
-            Log.i("WSX", "displayWeekDays: something went wrong list empty");
-        }
-
-    }
 }

@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class WeatherObject {
 
+    public static final String YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd HH:mm:ss";
     private String dt_txt, dt;
     private ArrayList<Weather> weather;
     private Main main;
@@ -21,7 +22,7 @@ public class WeatherObject {
     }
 
     public String getDayOfWeek(){
-        String dayOfWeek, fullDatePattern = "yyyy-MM-dd HH:mm:ss", dayPattern = "EEEE";
+        String dayOfWeek, fullDatePattern = YYYY_MM_DD_HH_MM_SS, dayPattern = "EEEE";
         Date fullDateFormat = null;
         SimpleDateFormat dayFormat = new SimpleDateFormat(dayPattern);
         try {

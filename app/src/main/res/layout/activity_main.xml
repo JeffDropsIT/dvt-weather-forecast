@@ -17,28 +17,32 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#47AB2F"
+        android:paddingTop="3dp"
         android:layout_below="@+id/img_forecast"
         android:orientation="horizontal">
         <TextView
             android:id="@+id/ttv_min"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="center"
+            android:layout_gravity="center"
+            android:layout_weight="1"
             android:text="0"/>
 
         <TextView
             android:id="@+id/ttv_current"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="center"
+            android:layout_gravity="center"
+            android:layout_weight="1"
             android:text="0"/>
         <TextView
             android:id="@+id/ttv_max"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="center"
+            android:layout_gravity="center"
             android:layout_weight="1"
             android:text="0"/>
 
@@ -49,28 +53,31 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#47AB2F"
-        android:paddingTop="3dp"
+        android:paddingTop="2dp"
 
         android:paddingBottom="5dp"
         android:layout_below="@+id/lin_header_temperature"
         android:orientation="horizontal">
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:gravity="center"
+            android:layout_gravity="center"
+            android:layout_weight="1"
             android:text="min"/>
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:gravity="center"
+            android:layout_gravity="center"
+            android:layout_weight="1"
             android:text="current"/>
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:layout_gravity="center"
             android:layout_weight="1"
             android:text="max"/>
 
@@ -96,32 +103,37 @@
             android:layout_weight="1">
             <TextView
                 android:id="@+id/ttv_day1"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:layout_gravity="center"
                 android:text="*"/>
             <TextView
                 android:id="@+id/ttv_day2"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:layout_gravity="center"
                 android:text="*"/>
             <TextView
                 android:id="@+id/ttv_day3"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:layout_gravity="center"
                 android:text="*"/>
             <TextView
                 android:id="@+id/ttv_day4"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:layout_gravity="center"
                 android:text="*"/>
             <TextView
                 android:id="@+id/ttv_day5"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:layout_gravity="center"
                 android:text="*"/>
 
@@ -133,61 +145,83 @@
             android:gravity="center"
             android:layout_weight="1">
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/ttv_icon1"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:layout_gravity="center"
                 android:text="*"/>
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/ttv_icon2"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:text="*"/>
+
+            <TextView
+                android:id="@+id/ttv_icon3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="*" />
+            <TextView
+                android:id="@+id/ttv_icon4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
                 android:layout_gravity="center"
                 android:text="*"/>
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/ttv_icon5"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="*"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="*"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:gravity="center"
                 android:layout_gravity="center"
                 android:text="*"/>
 
         </LinearLayout>
         <LinearLayout
+
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:gravity="center"
             android:layout_weight="1">
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/ttv_temp1"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:layout_gravity="center"
                 android:text="*"/>
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/ttv_temp2"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:layout_gravity="center"
                 android:text="*"/>
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/ttv_temp3"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:layout_gravity="center"
                 android:text="*"/>
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/ttv_temp4"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:layout_gravity="center"
                 android:text="*"/>
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/ttv_temp5"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:layout_gravity="center"
                 android:text="*"/>
 

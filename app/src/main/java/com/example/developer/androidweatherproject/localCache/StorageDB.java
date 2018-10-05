@@ -3,6 +3,7 @@ package com.example.developer.androidweatherproject.localCache;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
@@ -35,19 +36,25 @@ public class StorageDB {
                 ");";
         mDatabase.execSQL(sqlSite);
     }
-    public static void checkForNullKey(String key){
-        if (key == null){
-            throw new NullPointerException();
-        }
+
+    public static String getString(String key) {
+        return preferences.getString(key, "");
     }
-    public ArrayList<String> getListString(String key) {
-        return new ArrayList<String>(Arrays.asList(TextUtils.split(preferences.getString(key, ""), "‚‗‚")));
+
+    public static void putString(String key, String value) {
+        checkForNullKey(key); checkForNullValue(value);
+        preferences.edit().putString(key, value).apply();
+    }
+    public static ArrayList<String> getListString(String key) {
+        return new ArrayList<>(Arrays.asList(TextUtils.split(preferences.getString(key, ""), "‚‗‚")));
     }
     public static void putListString(String key, ArrayList<String> stringList) {
         checkForNullKey(key);
         String[] myStringList = stringList.toArray(new String[stringList.size()]);
         preferences.edit().putString(key, TextUtils.join("‚‗‚", myStringList)).apply();
     }
+
+
     public static void addWeatherEvents(ContentValues values){
         createWeatherDataTable();
         mDatabase.insertWithOnConflict(WEATHER_FORECAST, null, values, SQLiteDatabase.CONFLICT_REPLACE);
@@ -62,5 +69,30 @@ public class StorageDB {
         return values;
     }
 
+    public Cursor getCacheWeatherData(){
+        String select = "SELECT * FROM " + WEATHER_FORECAST;
+        return  mDatabase.rawQuery(select, null);
+    }
+    public Cursor getMatch(String field, String value){
+        String select = "SELECT * FROM " + WEATHER_FORECAST + " WHERE " +field + " = ?";
+        return  mDatabase.rawQuery(select, new String[]{value});
+    }
 
+
+    private static void checkForNullKey(String key){
+        if (key == null){
+            throw new NullPointerException();
+        }
+    }
+    private static void checkForNullValue(String value){
+        if (value == null){
+            throw new NullPointerException();
+        }
+    }
+
+
+    public String[] getColumnNames() {
+        String[] colNames = {"dt", "dtTxt", "id", "temperature", "tempMin", "tempMax", "icon", "main"};
+        return colNames;
+    }
 }
