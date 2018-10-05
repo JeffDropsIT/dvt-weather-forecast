@@ -14,6 +14,24 @@ public class WeekForecast  {
 
     }
 
+
+    public ArrayList getAllWeekDays(){
+        ArrayList<String> daysOfWeek = new ArrayList<>();
+        for(int i = 0;  i < list.size(); i++){
+            String dtTxt = list.get(i).getDt_txt();
+            String tmpDay =  list.get(i).getDayOfWeek(dtTxt);
+            if(!daysOfWeek.contains(tmpDay)){
+                daysOfWeek.add(tmpDay);
+            }
+
+        }
+
+        return daysOfWeek;
+    }
+    public String getCurrentDay(){
+        String today = list.get(0).getDayOfWeek();
+        return today;
+    }
     public ArrayList<WeatherObject> getList() {
         return list;
     }

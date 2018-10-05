@@ -56,7 +56,7 @@ public class HttpRequestTask extends AsyncTask<String, Void, WeekForecast> {
         String minStr =  Long.toString(main.kelvinToCelsius(min));
         displayWeatherInfo(currentStr, minStr, maxStr);
         Log.i("WSX", "onPostExecute: "+weekForecast);
-        Log.i("WSX", "onPostExecute: day of week"+weekForecast.getList().get(0).getDayOfWeek(weekForecast.getList().get(0).getDt_txt()));
+        Log.i("WSX", "onPostExecute: day of week"+weekForecast.getCurrentDay());
 
     }
 
