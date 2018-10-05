@@ -26,9 +26,4 @@ public class MainActivity extends AppCompatActivity {
         new HttpRequestTask(ttvCurrent, ttvMin, ttvMax).execute("21.21","22.22");
     }
 
-
-
-
-
-
 }

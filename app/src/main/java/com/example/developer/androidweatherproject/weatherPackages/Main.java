@@ -1,39 +1,49 @@
 package com.example.developer.androidweatherproject.weatherPackages;
+import android.util.Log;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Main {
 
-    private Float temp;
-    private Float temp_min;
-    private Float temp_max;
-
+    private Double temp;
+    private Double temp_min;
+    private Double temp_max;
+    private final Double KELVIN_CONSTANT = 273.15;
 
     public Main(){
 
     }
 
-    public void setTemp(Float temp) {
+
+    public long kelvinToCelsius(Double temperatureInKelvin){
+        //T(°C) = T(K) - 273.15
+        double tempInCelsius = temperatureInKelvin - KELVIN_CONSTANT;
+        Log.i("WSX", "kelvinToCelsius: "+Math.round(tempInCelsius));
+        return Math.round(tempInCelsius);
+    }
+
+    public void setTemp(Double temp) {
         this.temp = temp;
     }
 
-    public void setTemp_max(Float temp_max) {
+    public void setTemp_max(Double temp_max) {
         this.temp_max = temp_max;
     }
 
-    public void setTemp_min(Float temp_min) {
+    public void setTemp_min(Double temp_min) {
         this.temp_min = temp_min;
     }
 
-    public Float getTemp() {
+    public Double getTemp() {
         return temp;
     }
 
-    public Float getTemp_max() {
+    public Double getTemp_max() {
         return temp_max;
     }
 
-    public Float getTemp_min() {
+    public Double getTemp_min() {
         return temp_min;
     }
 

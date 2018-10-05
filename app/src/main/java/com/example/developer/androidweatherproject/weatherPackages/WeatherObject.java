@@ -1,6 +1,13 @@
 package com.example.developer.androidweatherproject.weatherPackages;
 
+import android.util.Log;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -12,6 +19,27 @@ public class WeatherObject {
     public WeatherObject(){
 
     }
+
+    public String getDayOfWeek(String dateTxt){
+        String dayOfWeek, fullDatePattern = "yyyy-MM-dd HH:mm:ss", dayPattern = "EEEE";
+        Date fullDateFormat = null;
+        SimpleDateFormat dayFormat = new SimpleDateFormat(dayPattern);
+        try {
+            fullDateFormat =  new SimpleDateFormat(fullDatePattern).parse(dateTxt);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        if(fullDateFormat != null){
+           dayOfWeek = dayFormat.format(fullDateFormat);
+            Log.i("DDD", "getDayOfWeek: "+dayOfWeek);
+            return dayOfWeek;
+        }else {
+            return "null";
+        }
+
+    }
+
+
 
     public Main getMain() {
         return main;

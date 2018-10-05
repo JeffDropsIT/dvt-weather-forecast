@@ -6,6 +6,7 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.example.developer.androidweatherproject.MainActivity;
+import com.example.developer.androidweatherproject.weatherPackages.Main;
 import com.example.developer.androidweatherproject.weatherPackages.WeekForecast;
 
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -45,20 +46,24 @@ public class HttpRequestTask extends AsyncTask<String, Void, WeekForecast> {
     @Override
     protected void onPostExecute(WeekForecast weekForecast) {
 
+        Main main = weekForecast.getList().get(0).getMain();
+        Double current = main.getTemp();
+        Double max = main.getTemp_max();
+        Double min = main.getTemp_min();
 
-
-        String current =  Float.toString(weekForecast.getList().get(0).getMain().getTemp());
-        String max =  Float.toString(weekForecast.getList().get(0).getMain().getTemp_max());
-        String min =  Float.toString(weekForecast.getList().get(0).getMain().getTemp_min());
-
-        displayWeatherInfo(current,  min, max);
+        String currentStr =  Long.toString(main.kelvinToCelsius(current));
+        String maxStr =  Long.toString(main.kelvinToCelsius(max));
+        String minStr =  Long.toString(main.kelvinToCelsius(min));
+        displayWeatherInfo(currentStr, minStr, maxStr);
         Log.i("WSX", "onPostExecute: "+weekForecast);
+        Log.i("WSX", "onPostExecute: day of week"+weekForecast.getList().get(0).getDayOfWeek(weekForecast.getList().get(0).getDt_txt()));
+
     }
 
 
     public void displayWeatherInfo(String current, String min, String max){
 
-        char degrees = (char) 0x00B0;
+        char degrees = (char) 0x00B0; // degree symbol
         ttvCurrent.setText(current+degrees);
         ttvMax.setText(max+degrees);
         ttvMin.setText(min+degrees);
