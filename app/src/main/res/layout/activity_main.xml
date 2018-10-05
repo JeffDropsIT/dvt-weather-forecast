@@ -95,26 +95,31 @@
             android:gravity="center"
             android:layout_weight="1">
             <TextView
+                android:id="@+id/ttv_day1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="*"/>
             <TextView
+                android:id="@+id/ttv_day2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="*"/>
             <TextView
+                android:id="@+id/ttv_day3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="*"/>
             <TextView
+                android:id="@+id/ttv_day4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="*"/>
             <TextView
+                android:id="@+id/ttv_day5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"

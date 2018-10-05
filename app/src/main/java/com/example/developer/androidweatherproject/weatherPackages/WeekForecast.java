@@ -1,10 +1,13 @@
 package com.example.developer.androidweatherproject.weatherPackages;
 
+import android.util.Log;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class WeekForecast  {
+public class WeekForecast implements Serializable {
 
     private String cod;
     private Integer cnt;
@@ -22,9 +25,12 @@ public class WeekForecast  {
             String tmpDay =  list.get(i).getDayOfWeek(dtTxt);
             if(!daysOfWeek.contains(tmpDay)){
                 daysOfWeek.add(tmpDay);
+                Log.i("WSX", "getAllWeekDays: "+tmpDay);
             }
 
         }
+
+
 
         return daysOfWeek;
     }
