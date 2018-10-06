@@ -23,10 +23,6 @@ import java.util.Map;
 import static com.example.developer.androidweatherproject.MainActivity.getStorageDBServer;
 
 public class HttpRequestTask extends AsyncTask<String, Void, WeekForecast> {
-    public static final String WEEK_DAYS = "weekDays";
-    public static final String CURRENT_STR = "currentStr";
-    public static final String MAX_STR = "maxStr";
-    public static final String MIN_STR = "minStr";
     private final String BASE_PATH = "http://api.openweathermap.org/data/2.5/forecast", appid = "0ba4a7729669b8c072c20f5daa13b4a9";
     private OnTaskCompleted listener;
     public HttpRequestTask(OnTaskCompleted listener){
@@ -49,7 +45,7 @@ public class HttpRequestTask extends AsyncTask<String, Void, WeekForecast> {
             restTemplate.getMessageConverters().add(
                     new MappingJackson2HttpMessageConverter());
             WeekForecast weekForecast = restTemplate.getForObject(url, WeekForecast.class);
-            Log.i("WSX", "onCreate: "+weekForecast.toString());
+
             return weekForecast;
         } catch (Exception e) {
             Log.e("WSX", e.getMessage(), e);
@@ -64,24 +60,8 @@ public class HttpRequestTask extends AsyncTask<String, Void, WeekForecast> {
     @Override
     protected void onPostExecute(WeekForecast weekForecast) {
 
-
-
-        Main main = weekForecast.getList().get(0).getMain();
-        long current = main.getTemp();
-        long max = main.getTemp_max();
-        long min = main.getTemp_min();
-
-
-
-
         Log.i("WSX", "onPostExecute: "+weekForecast);
-        Log.i("WSX", "onPostExecute: day of week"+weekForecast.getCurrentDay());
 
-
-        getStorageDBServer().putString(CURRENT_STR, Long.toString(current));
-        getStorageDBServer().putString(MAX_STR, Long.toString(max));
-        getStorageDBServer().putString(MIN_STR, Long.toString(min));
-        getStorageDBServer().putListString(WEEK_DAYS,weekForecast.getAllWeekDays());
         cacheWeatherData(weekForecast);
 
 

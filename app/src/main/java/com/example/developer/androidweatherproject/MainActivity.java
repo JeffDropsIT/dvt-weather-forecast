@@ -16,23 +16,22 @@ import com.example.developer.androidweatherproject.localCache.StorageDB;
 import com.example.developer.androidweatherproject.services.UpdateWeatherService;
 import com.example.developer.androidweatherproject.weatherPackages.apiCall.HttpRequestTask;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 import static com.example.developer.androidweatherproject.weatherPackages.WeatherObject.YYYY_MM_DD_HH_MM_SS;
-import static com.example.developer.androidweatherproject.weatherPackages.apiCall.HttpRequestTask.CURRENT_STR;
-import static com.example.developer.androidweatherproject.weatherPackages.apiCall.HttpRequestTask.MAX_STR;
-import static com.example.developer.androidweatherproject.weatherPackages.apiCall.HttpRequestTask.MIN_STR;
-import static com.example.developer.androidweatherproject.weatherPackages.apiCall.HttpRequestTask.WEEK_DAYS;
 
 
 public class MainActivity extends AppCompatActivity implements HttpRequestTask.OnTaskCompleted {
 
     private static final String DATABASE_NAME = "WeatherDB";
+    public static final String CURRENT_TEMPERATURE = "temperature";
+    public static final String TEMP_MIN = "tempMin";
+    public static final String TEMP_MAX = "tempMax";
     private SQLiteDatabase weatherDB;
     public static StorageDB storageDBServer;
     TextView ttvCurrent, ttvMin, ttvMax;
@@ -61,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
 
 
         weatherDB = openOrCreateDatabase(DATABASE_NAME, MODE_PRIVATE, null);
-        storageDBServer = new StorageDB(weatherDB, getApplicationContext());
+        storageDBServer = new StorageDB(weatherDB);
 
 
         daysTextViewList = new ArrayList<>();
@@ -82,6 +81,8 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
         daysTextViewList.add(ttvDay4);
         daysTextViewList.add(ttvDay5);
 
+
+        //storageDBServer.getAllWeekDays();
 
 
 
@@ -104,8 +105,8 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
             Log.i("WSX", "onResume: no internet connection ");
         }
         updateWeatherInfo();
-        displayWeatherInfo(storageDBServer.getString(CURRENT_STR),storageDBServer.getString(MIN_STR) ,storageDBServer.getString(MAX_STR));
-        displayWeekDays(storageDBServer.getListString(WEEK_DAYS));
+        displayWeatherInfo();
+        displayWeekDays();
     }
 
 
@@ -182,14 +183,12 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
     private void updateWeatherInfo(){
 
 
-        int currentForecastHour = calculateForecastHours()[1];
         int futureForecastHour = calculateForecastHours()[0];
-        String currentForecastDate = getCurrentForecastDate(currentForecastHour);
-        storageDBServer.getDayForecast(currentForecastDate);
+
+
 
         Log.i("WSX", "updateWeatherInfo: futureForecast hour "+futureForecastHour);
-        Log.i("WSX", "updateWeatherInfo: currentForecast hour "+currentForecastHour);
-        Log.i("WSX", "updateWeatherInfo: currentForecastDate "+currentForecastDate);
+
 
 
         Intent updateIntent = new Intent(this, UpdateWeatherService.class);
@@ -207,12 +206,25 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
 
         manager.setRepeating(AlarmManager.RTC_WAKEUP, 10000, interval, alarmIntent); //update every three hours
 
-
-
     }
-    private void displayWeatherInfo(String current, String min, String max){
 
 
+
+    private void displayWeatherInfo(){
+
+        String current = "0", min = "0", max = "0";
+        int currentForecastHour = calculateForecastHours()[1];
+        String currentForecastDate = getCurrentForecastDate(currentForecastHour);
+        Map<String, Object> currentDayForecast =  storageDBServer.getDayForecast(currentForecastDate);
+
+        if(!currentDayForecast.isEmpty()){
+            current = currentDayForecast.get(CURRENT_TEMPERATURE).toString();
+            min = currentDayForecast.get(TEMP_MIN).toString();
+            max = currentDayForecast.get(TEMP_MAX).toString();
+        }
+
+        Log.i("WSX", "updateWeatherInfo: currentForecast hour "+currentForecastHour);
+        Log.i("WSX", "updateWeatherInfo: currentForecastDate "+currentForecastDate);
         Log.i("WSX", "displayWeatherInfo: "+current+" "+min+" "+max);
         char degrees = (char) 0x00B0; // degree symbol
         ttvCurrent.setText(current+degrees);
@@ -220,8 +232,8 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
         ttvMin.setText(min+degrees);
     }
 
-    private void displayWeekDays(ArrayList<String> weekDays){
-
+    private void displayWeekDays(){
+        ArrayList<String> weekDays = storageDBServer.getAllWeekDays();
         if(!weekDays.isEmpty() && !daysTextViewList.isEmpty()){
             weekDays.remove(0);
             if(weekDays.size() == daysTextViewList.size()){
@@ -250,8 +262,8 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
     public void onTaskCompleted() {
 
 
-        displayWeatherInfo(storageDBServer.getString(CURRENT_STR),storageDBServer.getString(MIN_STR) ,storageDBServer.getString(MAX_STR));
-        displayWeekDays(storageDBServer.getListString(WEEK_DAYS));
+        displayWeatherInfo();
+        displayWeekDays();
         updateWeatherInfo();
     }
 }

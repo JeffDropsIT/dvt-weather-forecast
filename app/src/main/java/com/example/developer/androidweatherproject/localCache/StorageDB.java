@@ -9,20 +9,27 @@ import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+
+import static com.example.developer.androidweatherproject.weatherPackages.WeatherObject.YYYY_MM_DD_HH_MM_SS;
 
 public class StorageDB {
 
 
     public static final String WEATHER_FORECAST = "WeatherForecast";
     private static SQLiteDatabase mDatabase;
-    private static SharedPreferences preferences;
-    public StorageDB(SQLiteDatabase db, Context appContext){
+    public StorageDB(SQLiteDatabase db){
         this.mDatabase = db;
-        preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
     }
     private static void createWeatherDataTable(){
 
@@ -39,22 +46,6 @@ public class StorageDB {
         mDatabase.execSQL(sqlSite);
     }
 
-    public static String getString(String key) {
-        return preferences.getString(key, "");
-    }
-
-    public static void putString(String key, String value) {
-        checkForNullKey(key); checkForNullValue(value);
-        preferences.edit().putString(key, value).apply();
-    }
-    public static ArrayList<String> getListString(String key) {
-        return new ArrayList<>(Arrays.asList(TextUtils.split(preferences.getString(key, ""), "‚‗‚")));
-    }
-    public static void putListString(String key, ArrayList<String> stringList) {
-        checkForNullKey(key);
-        String[] myStringList = stringList.toArray(new String[stringList.size()]);
-        preferences.edit().putString(key, TextUtils.join("‚‗‚", myStringList)).apply();
-    }
 
 
     public static void addWeatherEvents(ContentValues values){
@@ -84,6 +75,71 @@ public class StorageDB {
 
 
 
+    private String getDayOfWeek(String dtTxt){
+        String dayOfWeek, fullDatePattern = "yyyy-MM-dd HH:mm:ss", dayPattern = "EEEE";
+        Date fullDateFormat = null;
+        SimpleDateFormat dayFormat = new SimpleDateFormat(dayPattern);
+        try {
+            fullDateFormat =  new SimpleDateFormat(fullDatePattern).parse(dtTxt);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        if(fullDateFormat != null){
+            dayOfWeek = dayFormat.format(fullDateFormat);
+            Log.i("DDD", "getDayOfWeek: "+dayOfWeek);
+            return dayOfWeek;
+        }else {
+            return "null";
+        }
+
+    }
+
+
+    private ArrayList<String> sortDays(ArrayList<String> datestring){
+        Log.i("WSX", "sort  unsortedDays: "+datestring);
+        Collections.sort(datestring, new Comparator<String>() {
+            DateFormat f = new SimpleDateFormat(YYYY_MM_DD_HH_MM_SS);
+            @Override
+            public int compare(String o1, String o2) {
+                try {
+                    return f.parse(o1).compareTo(f.parse(o2));
+                } catch (ParseException e) {
+                    throw new IllegalArgumentException(e);
+                }
+            }
+        });
+
+        Log.i("WSX", "sort sortDays: "+datestring);
+        return datestring;
+    }
+    public ArrayList getAllWeekDays(){
+        ArrayList<String> daysOfWeek = new ArrayList<>();
+        ArrayList<String> dtTxtList = new ArrayList<>();
+
+
+
+        Set dtTxtSet = getLocalForecastData().keySet();
+        dtTxtList.addAll(dtTxtSet);
+
+        dtTxtList = sortDays(dtTxtList); //sort and reassign
+
+
+        Log.i("WSX", "WEEKLIST: keys "+dtTxtList);
+
+        for(int i = 0;  i < dtTxtList.size(); i++){
+            String dtTxt = dtTxtList.get(i);
+            String tmpDay =  getDayOfWeek(dtTxt);
+            if(!daysOfWeek.contains(tmpDay)){
+                daysOfWeek.add(tmpDay);
+                Log.i("WSX", "WEEKLIST: "+tmpDay);
+            }
+
+        }
+
+
+
+        return daysOfWeek;
+    }
 
 
     public Map<String, Object> getDayForecast(String currentForecastTime){
@@ -148,16 +204,6 @@ public class StorageDB {
         return tableData;
     }
 
-    private static void checkForNullKey(String key){
-        if (key == null){
-            throw new NullPointerException();
-        }
-    }
-    private static void checkForNullValue(String value){
-        if (value == null){
-            throw new NullPointerException();
-        }
-    }
 
 
     public String[] getColumnNames() {

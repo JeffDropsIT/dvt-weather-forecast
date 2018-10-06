@@ -32,7 +32,6 @@ public class WeatherObject {
         }
         if(fullDateFormat != null){
            dayOfWeek = dayFormat.format(fullDateFormat);
-            Log.i("DDD", "getDayOfWeek: "+dayOfWeek);
             return dayOfWeek;
         }else {
             return "null";
@@ -50,7 +49,6 @@ public class WeatherObject {
         }
         if(fullDateFormat != null){
             dayOfWeek = dayFormat.format(fullDateFormat);
-            Log.i("DDD", "getDayOfWeek: "+dayOfWeek);
             return dayOfWeek;
         }else {
             return "null";
