@@ -3,9 +3,11 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,7 +21,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 import static com.example.developer.androidweatherproject.weatherPackages.WeatherObject.YYYY_MM_DD_HH_MM_SS;
@@ -31,13 +32,15 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
     public static final String CURRENT_TEMPERATURE = "temperature";
     public static final String TEMP_MIN = "tempMin";
     public static final String TEMP_MAX = "tempMax";
+    public static final String IS_CACHED = "isDataCached";
     private SQLiteDatabase weatherDB;
     public static StorageDB storageDBServer;
     TextView ttvCurrent, ttvMin, ttvMax;
     TextView ttvDay1, ttvDay2, ttvDay3, ttvDay4, ttvDay5;
     ArrayList<TextView> daysTextViewList;
     private static ConnectivityManager connectivityManager;
-    private boolean isDataCached;
+    public static SharedPreferences preferences;
+
 
 
     public static StorageDB getStorageDBServer(){
@@ -48,10 +51,18 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        isDataCached = false;
+
+        //create local cache if not exist
+        weatherDB = openOrCreateDatabase(DATABASE_NAME, MODE_PRIVATE, null);
+        storageDBServer = new StorageDB(weatherDB);
+
+        //shared prefs value to check whether data has been cached
+        preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
         connectivityManager
                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
+        //if internet connection update cache else do nothing for now
         if(isNetworkAvailable()){
             new HttpRequestTask(this).execute("21.21","22.22");
             Log.i("WSX", "onCreate: internet connection ");
@@ -60,8 +71,7 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
         }
 
 
-        weatherDB = openOrCreateDatabase(DATABASE_NAME, MODE_PRIVATE, null);
-        storageDBServer = new StorageDB(weatherDB);
+
 
 
         daysTextViewList = new ArrayList<>();
@@ -87,7 +97,12 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
 
 
     }
-
+    private boolean getBoolean(String key) {
+        return preferences.getBoolean(key, false);
+    }
+    public static void putBoolean(String key, boolean value) {
+        preferences.edit().putBoolean(key, value).apply();
+    }
 
     @Override
     protected void onStart() {
@@ -104,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
         }else{
             Log.i("WSX", "onResume: no internet connection ");
         }
-        if(isDataCached){
+        if(getBoolean(IS_CACHED)){
             updateUI();
         }
     }
@@ -267,6 +282,6 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
     public void onTaskCompleted() {
 
         updateUI();
-        isDataCached = true;
+
     }
 }

@@ -20,7 +20,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.example.developer.androidweatherproject.MainActivity.IS_CACHED;
 import static com.example.developer.androidweatherproject.MainActivity.getStorageDBServer;
+import static com.example.developer.androidweatherproject.MainActivity.putBoolean;
 
 public class HttpRequestTask extends AsyncTask<String, Void, WeekForecast> {
     private final String BASE_PATH = "http://api.openweathermap.org/data/2.5/forecast", appid = "0ba4a7729669b8c072c20f5daa13b4a9";
@@ -118,6 +120,7 @@ public class HttpRequestTask extends AsyncTask<String, Void, WeekForecast> {
         }
 
 
+        putBoolean(IS_CACHED,true);
 
 
     }
