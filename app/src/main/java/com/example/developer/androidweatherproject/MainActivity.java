@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,7 +16,6 @@ import com.example.developer.androidweatherproject.localCache.StorageDB;
 import com.example.developer.androidweatherproject.services.UpdateWeatherService;
 import com.example.developer.androidweatherproject.weatherPackages.apiCall.HttpRequestTask;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -49,7 +50,16 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        new HttpRequestTask(this).execute("21.21","22.22");
+
+
+        if(isNetworkAvailable()){
+            new HttpRequestTask(this).execute("21.21","22.22");
+            Log.i("WSX", "onCreate: internet connection ");
+        }else{
+            Log.i("WSX", "onCreate: no internet connection ");
+        }
+
+
         weatherDB = openOrCreateDatabase(DATABASE_NAME, MODE_PRIVATE, null);
         storageDBServer = new StorageDB(weatherDB, getApplicationContext());
 
@@ -74,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
 
 
 
-        updateWeatherInfo();
+
     }
 
 
@@ -87,60 +97,100 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
     @Override
     protected void onResume() {
         super.onResume();
-        new HttpRequestTask(this).execute("21.21","22.22");
+        if(isNetworkAvailable()){
+            new HttpRequestTask(this).execute("21.21","22.22");
+            Log.i("WSX", "onResume: internet connection ");
+        }else{
+            Log.i("WSX", "onResume: no internet connection ");
+        }
+        updateWeatherInfo();
         displayWeatherInfo(storageDBServer.getString(CURRENT_STR),storageDBServer.getString(MIN_STR) ,storageDBServer.getString(MAX_STR));
         displayWeekDays(storageDBServer.getListString(WEEK_DAYS));
     }
 
 
     private int getCurrentHour(){
-        Calendar currentForecastTmp = Calendar.getInstance();
-        currentForecastTmp.setTimeInMillis(System.currentTimeMillis());
+
+        Date currentForecastTmp =  new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm aa");
-        String time = dateFormat.format(currentForecastTmp.getTime());
+        String time = dateFormat.format(currentForecastTmp);
 
         return  Integer.parseInt(time.split(":")[0]);
 
     }
+
+    private String getCurrentForecastDate(int currentForecastTime){
+
+        SimpleDateFormat dayFormat = new SimpleDateFormat(YYYY_MM_DD_HH_MM_SS);
+        Calendar currentForecastCal = Calendar.getInstance();
+        currentForecastCal.setTimeInMillis(System.currentTimeMillis());
+        currentForecastCal.set(Calendar.HOUR_OF_DAY, currentForecastTime);
+        currentForecastCal.set(Calendar.MINUTE, 0);
+        currentForecastCal.set(Calendar.SECOND, 0);
+
+
+        String currentForecastDate = dayFormat.format(currentForecastCal.getTime());
+
+        return currentForecastDate;
+    }
+
+    private Calendar getNxtForecastCalender(int futureForecastTime){
+
+        Calendar timeTillUpdateCal = Calendar.getInstance();
+        timeTillUpdateCal.set(Calendar.HOUR_OF_DAY, futureForecastTime);
+        timeTillUpdateCal.set(Calendar.MINUTE, 0);
+        timeTillUpdateCal.set(Calendar.SECOND, 0);
+
+
+
+        return timeTillUpdateCal;
+    }
+
+    private String getNxtForecastDate(int futureForecastTime){
+
+        SimpleDateFormat dayFormat = new SimpleDateFormat(YYYY_MM_DD_HH_MM_SS);
+        Calendar timeTillUpdateCal = Calendar.getInstance();
+        timeTillUpdateCal.set(Calendar.HOUR_OF_DAY, futureForecastTime);
+        timeTillUpdateCal.set(Calendar.MINUTE, 0);
+        timeTillUpdateCal.set(Calendar.SECOND, 0);
+
+
+        String timeTillUpdate = dayFormat.format(timeTillUpdateCal.getTime());
+
+        return timeTillUpdate;
+    }
     private void updateWeatherInfo(){
 
 
+        int currentHour  = getCurrentHour();
+        int remainderNxtHour = currentHour % 3;
+        int currentForecastHour = currentHour;
 
-        int currentTime  = getCurrentHour();
-        int remainderNxtTime = currentTime % 3;
-        int currentForecastTime = currentTime;
-
-        //get the current time and calculate the next hour data needs
+        //get the current time and calculate the next hour, data needs
         //to be updated and set alarm manager to get refreshed on current time
-        if(remainderNxtTime == 0){
-            currentTime += 0;
+        if(remainderNxtHour == 0){
+            currentHour += 0;
 
-        }else if(remainderNxtTime == 1){
-            currentTime += 2;
-            currentForecastTime -= 1;
+        }else if(remainderNxtHour == 1){
+            currentHour += 2;
+            currentForecastHour -= 1;
 
-
-
-        }else if(remainderNxtTime == 2){
-            currentTime += 1;
-            currentForecastTime -= 2;
+        }else if(remainderNxtHour == 2){
+            currentHour += 1;
+            currentForecastHour -= 2;
         }
 
-        int futureForecastTime = currentTime;
+        int futureForecastHour = currentHour;
+
+        Log.i("WSX", "updateWeatherInfo: futureforecast hour "+futureForecastHour);
+
+        Log.i("WSX", "updateWeatherInfo: currentForecast hour "+currentForecastHour);
 
 
 
-        Log.i("WSX", "updateWeatherInfo: currentForecastDate "+currentForecastTime);
-        Calendar currentForecastCal = Calendar.getInstance();
-        currentForecastCal.setTimeInMillis(System.currentTimeMillis());
-        currentForecastCal.set(Calendar.HOUR, currentForecastTime);
-        currentForecastCal.set(Calendar.MINUTE, 0);
-        currentForecastCal.set(Calendar.SECOND, 0);
-        //SimpleDateFormat dayFormat = new SimpleDateFormat(YYYY_MM_DD_HH_MM_SS);
-
-        Date currentForecastDate = currentForecastCal.getTime();
+        String currentForecastDate = getCurrentForecastDate(currentForecastHour);
         Log.i("WSX", "updateWeatherInfo: currentForecastDate "+currentForecastDate);
-        //getLocalForecastData(currentForecastDate);
+        getDayForecast(currentForecastDate);
 
         Intent updateIntent = new Intent(this, UpdateWeatherService.class);
         PendingIntent alarmIntent = PendingIntent.getService(this, 0, updateIntent, 0);
@@ -148,19 +198,14 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
         AlarmManager manager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
 
         long interval =  60 * 1000;  //60 * 60 * 1000 * 3; //180 minutes
-        Calendar timeTillUpdate = Calendar.getInstance();
-        timeTillUpdate.add(Calendar.HOUR, futureForecastTime);
-        timeTillUpdate.add(Calendar.MINUTE, 0);
-        timeTillUpdate.add(Calendar.SECOND, 0);
+        String timeTillUpdate = getNxtForecastDate(futureForecastHour);
+        Calendar timeTillUpdateCal = getNxtForecastCalender(futureForecastHour);
+
+        Log.i("WSX", "updateWeatherInfo: ddddd "+timeTillUpdate);
 
 
-        DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
-        Date dateobj = new Date();
-        Log.i("WSX", "updateWeatherInfo: ddddd "+df.format(dateobj).replace("/", "-"));
-
-
-        long timeTillUpdateLong = timeTillUpdate.getTimeInMillis();
-        Log.i("WSX", "updateWeatherInfo: timeTillUpdate "+timeTillUpdate.getTime());
+        long timeTillUpdateLong = timeTillUpdateCal.getTimeInMillis();
+        Log.i("WSX", "updateWeatherInfo: timeTillUpdate "+timeTillUpdate);
         manager.setRepeating(AlarmManager.RTC_WAKEUP, 10000, interval, alarmIntent);
 
 
@@ -194,21 +239,34 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
 
     }
 
-    private Map<String, Object> getLocalForecastData(String currentForecastTime){
+
+    private Map<String, Object> getDayForecast(String currentForecastTime){
+        Map<String, Map<String, Object> > forecastData = getLocalForecastData();
+        Log.i("WSX", "confusion: currentForecastTime "+currentForecastTime);
+        Log.i("WSX", "confusion: "+ forecastData.get(currentForecastTime));
+        return forecastData.get(currentForecastTime);
+
+    }
+    private Map<String, Map<String, Object>> getLocalForecastData(){
+
+
         String[] tableCols = storageDBServer.getColumnNames();
         Cursor forecastCursor;
-        forecastCursor = storageDBServer.getMatch("dtTxt", currentForecastTime);
-        Map<String, Object> data = new HashMap<>();
+        forecastCursor = storageDBServer.getCacheWeatherData();
+        Log.i("WSX", "count: "+forecastCursor.getCount());
+        Map<String, Map<String, Object>> tableData = new HashMap<>();
         if(forecastCursor.moveToNext()){
             do{
+                Map<String, Object> data = new HashMap<>();
                 for(int i = 0 ; i < tableCols.length ; i++){
                     String colContent = forecastCursor.getString(forecastCursor.getColumnIndex(tableCols[i]));
+                    Log.i("WSX", "getLocalForecastData: colContent "+colContent);
                     switch (tableCols[i]){
                         case "dt":
                             data.put("dt", colContent);
                             break;
-                        case "dtTime":
-                            data.put("dtTime", colContent);
+                        case "dtTxt":
+                            data.put("dtTxt", colContent);
                             break;
                         case "icon":
                             data.put("icon", colContent);
@@ -227,15 +285,27 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
                             break;
                         case "id":
                             data.put("id", colContent);
+
                             break;
 
                     }
+
+
                 }
+
+                tableData.put(data.get("dtTxt").toString(), data);
+                Log.i("WSX", "getLocalForecastData: "+data.keySet() +"|"+data.size() +" | "+data+ "| "+data.get("dtTxt").toString());
             }while (forecastCursor.moveToNext());
         }
 
-        Log.i("WSX", "getLocalForecastData: "+data.keySet() +"|"+data);
-        return data;
+        Log.i("WSX", "getLocalForecastData: table data "+"|"+tableData);
+        return tableData;
+    }
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     @Override
@@ -244,5 +314,6 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
 
         displayWeatherInfo(storageDBServer.getString(CURRENT_STR),storageDBServer.getString(MIN_STR) ,storageDBServer.getString(MAX_STR));
         displayWeekDays(storageDBServer.getListString(WEEK_DAYS));
+        updateWeatherInfo();
     }
 }

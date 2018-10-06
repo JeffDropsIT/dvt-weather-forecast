@@ -25,11 +25,11 @@ public class StorageDB {
     private static void createWeatherDataTable(){
 
         String sqlSite = "CREATE TABLE IF NOT EXISTS WeatherForecast (\n" +
-                "\tdt int PRIMARY KEY,\n" +
+                "\tdt int ,\n" +
                 "\tid int , \n" +
                 "\tmain  varchar(200),\n" +
                 "\ticon  varchar(200), \n" +
-                "\tdtTxt varchar(200), \n" +
+                "\tdtTxt varchar(200) PRIMARY KEY, \n" +
                 "\ttempMax varchar(200),  \n" +
                 "\ttempMin varchar(200), \n" +
                 "\ttemperature varchar(200) \n" +
@@ -70,13 +70,17 @@ public class StorageDB {
     }
 
     public Cursor getCacheWeatherData(){
-        String select = "SELECT * FROM " + WEATHER_FORECAST;
+        createWeatherDataTable();
+        String select = "SELECT * FROM  " + WEATHER_FORECAST;
         return  mDatabase.rawQuery(select, null);
     }
     public Cursor getMatch(String field, String value){
+        createWeatherDataTable();
         String select = "SELECT * FROM " + WEATHER_FORECAST + " WHERE " +field + " = ?";
         return  mDatabase.rawQuery(select, new String[]{value});
     }
+
+
 
 
     private static void checkForNullKey(String key){

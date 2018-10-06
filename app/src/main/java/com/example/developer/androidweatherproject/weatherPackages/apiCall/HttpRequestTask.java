@@ -133,11 +133,11 @@ public class HttpRequestTask extends AsyncTask<String, Void, WeekForecast> {
             Log.i("WSX", "cacheWeatherData: tmpMin: "+ weatherForecastMap.get("tempMin"));
             Log.i("WSX", "cacheWeatherData: tmpMax: "+ weatherForecastMap.get("tempMax"));
 
-
+            getStorageDBServer().addWeatherEvents(StorageDB.toContentValues(weatherForecastMap));
 
         }
 
-        getStorageDBServer().addWeatherEvents(StorageDB.toContentValues(weatherForecastMap));
+
 
 
     }

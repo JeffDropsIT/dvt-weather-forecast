@@ -19,7 +19,6 @@ public class Main {
     private long kelvinToCelsius(Double temperatureInKelvin){
         //T(°C) = T(K) - 273.15
         double tempInCelsius = temperatureInKelvin - KELVIN_CONSTANT;
-        Log.i("WSX", "kelvinToCelsius: "+Math.round(tempInCelsius));
         return Math.round(tempInCelsius);
     }
 
