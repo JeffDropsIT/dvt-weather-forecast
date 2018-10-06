@@ -3,7 +3,6 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -16,7 +15,6 @@ import com.example.developer.androidweatherproject.localCache.StorageDB;
 import com.example.developer.androidweatherproject.services.UpdateWeatherService;
 import com.example.developer.androidweatherproject.weatherPackages.apiCall.HttpRequestTask;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -82,7 +80,6 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
         daysTextViewList.add(ttvDay5);
 
 
-        //storageDBServer.getAllWeekDays();
 
 
 
@@ -260,7 +257,6 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
 
     @Override
     public void onTaskCompleted() {
-
 
         displayWeatherInfo();
         displayWeekDays();
