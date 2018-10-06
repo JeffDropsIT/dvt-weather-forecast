@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
         //get the current time and calculate the next hour, data needs
         //to be updated and set alarm manager to get refreshed on current time
         if(remainderNxtHour == 0){
-            currentHour += 0;
+            currentHour += 3;
 
         }else if(remainderNxtHour == 1){
             currentHour += 2;
@@ -175,6 +175,8 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
             currentForecastHour -= 2;
         }
         int futureForecastHour = currentHour;
+        Log.i("WSX", "calculateForecastHours: futureForecastHour hour "+futureForecastHour);
+        Log.i("WSX", "calculateForecastHours: currentForecastHour hour "+currentForecastHour);
         return new int[]{ futureForecastHour , currentForecastHour};
     }
     private void updateWeatherInfo(){
