@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">AndroidWeatherProject</string>
+    <string name="error_message">"No internet connection found. &#xD; Check your connection"</string>
 </resources>

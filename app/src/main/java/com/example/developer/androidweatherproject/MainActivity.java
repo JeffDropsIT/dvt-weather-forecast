@@ -50,17 +50,25 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        //shared prefs value to check whether data has been cached
+        preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+        if(!isNetworkAvailable() && !getBoolean(IS_CACHED)){
+            setContentView(R.layout.error_layout);
+        }else {
+            setContentView(R.layout.activity_main);
+        }
+
 
         //create local cache if not exist
         weatherDB = openOrCreateDatabase(DATABASE_NAME, MODE_PRIVATE, null);
         storageDBServer = new StorageDB(weatherDB);
 
-        //shared prefs value to check whether data has been cached
-        preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
-        connectivityManager
-                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+
 
         //if internet connection update cache else do nothing for now
         if(isNetworkAvailable()){

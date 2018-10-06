@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="#e3e3e3"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+
+
+
+    <ImageView
+        android:id="@+id/img_error"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:src="@drawable/no_internet_connection"
+        />
+
+
+    <TextView
+        android:layout_below="@+id/img_error"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textSize="35dp"
+        android:textColor="#7d7d7d"
+        android:gravity="center"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:text="Ooops!"
+        />
+
+    <TextView
+        android:layout_below="@+id/img_error"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#7d7d7d"
+        android:textSize="18dp"
+        android:gravity="center"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:text="@string/error_message"
+        />
+
+</LinearLayout>
