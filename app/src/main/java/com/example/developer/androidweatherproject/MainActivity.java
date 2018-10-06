@@ -19,6 +19,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.example.developer.androidweatherproject.weatherPackages.WeatherObject.YYYY_MM_DD_HH_MM_SS;
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
     TextView ttvDay1, ttvDay2, ttvDay3, ttvDay4, ttvDay5;
     ArrayList<TextView> daysTextViewList;
     private static ConnectivityManager connectivityManager;
+    private boolean isDataCached;
 
 
     public static StorageDB getStorageDBServer(){
@@ -46,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        isDataCached = false;
         connectivityManager
                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
@@ -102,12 +104,17 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
         }else{
             Log.i("WSX", "onResume: no internet connection ");
         }
-        updateWeatherInfo();
-        displayWeatherInfo();
-        displayWeekDays();
+        if(isDataCached){
+            updateUI();
+        }
     }
 
 
+    private void updateUI(){
+        updateWeatherInfo();
+        displayWeekDays();
+        displayWeatherInfo();
+    }
     private int getCurrentHour(){
 
         Date currentForecastTmp =  new Date();
@@ -212,8 +219,9 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
 
         String current = "0", min = "0", max = "0";
         int currentForecastHour = calculateForecastHours()[1];
+        Map<String, Object> currentDayForecast;
         String currentForecastDate = getCurrentForecastDate(currentForecastHour);
-        Map<String, Object> currentDayForecast =  storageDBServer.getDayForecast(currentForecastDate);
+        currentDayForecast =  storageDBServer.getDayForecast(currentForecastDate);
 
         if(!currentDayForecast.isEmpty()){
             current = currentDayForecast.get(CURRENT_TEMPERATURE).toString();
@@ -258,8 +266,7 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
     @Override
     public void onTaskCompleted() {
 
-        displayWeatherInfo();
-        displayWeekDays();
-        updateWeatherInfo();
+        updateUI();
+        isDataCached = true;
     }
 }
