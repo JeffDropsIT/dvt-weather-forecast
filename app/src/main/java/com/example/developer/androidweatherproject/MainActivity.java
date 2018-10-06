@@ -190,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
 
         String currentForecastDate = getCurrentForecastDate(currentForecastHour);
         Log.i("WSX", "updateWeatherInfo: currentForecastDate "+currentForecastDate);
-        getDayForecast(currentForecastDate);
+        storageDBServer.getDayForecast(currentForecastDate);
 
         Intent updateIntent = new Intent(this, UpdateWeatherService.class);
         PendingIntent alarmIntent = PendingIntent.getService(this, 0, updateIntent, 0);
@@ -240,67 +240,6 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
     }
 
 
-    private Map<String, Object> getDayForecast(String currentForecastTime){
-        Map<String, Map<String, Object> > forecastData = getLocalForecastData();
-        Log.i("WSX", "confusion: currentForecastTime "+currentForecastTime);
-        Log.i("WSX", "confusion: "+ forecastData.get(currentForecastTime));
-        return forecastData.get(currentForecastTime);
-
-    }
-    private Map<String, Map<String, Object>> getLocalForecastData(){
-
-
-        String[] tableCols = storageDBServer.getColumnNames();
-        Cursor forecastCursor;
-        forecastCursor = storageDBServer.getCacheWeatherData();
-        Log.i("WSX", "count: "+forecastCursor.getCount());
-        Map<String, Map<String, Object>> tableData = new HashMap<>();
-        if(forecastCursor.moveToNext()){
-            do{
-                Map<String, Object> data = new HashMap<>();
-                for(int i = 0 ; i < tableCols.length ; i++){
-                    String colContent = forecastCursor.getString(forecastCursor.getColumnIndex(tableCols[i]));
-                    Log.i("WSX", "getLocalForecastData: colContent "+colContent);
-                    switch (tableCols[i]){
-                        case "dt":
-                            data.put("dt", colContent);
-                            break;
-                        case "dtTxt":
-                            data.put("dtTxt", colContent);
-                            break;
-                        case "icon":
-                            data.put("icon", colContent);
-                            break;
-                        case "main":
-                            data.put("main", colContent);
-                            break;
-                        case "tempMax":
-                            data.put("tempMax", colContent);
-                            break;
-                        case "tempMin":
-                            data.put("tempMin", colContent);
-                            break;
-                        case "temperature":
-                            data.put("temperature", colContent);
-                            break;
-                        case "id":
-                            data.put("id", colContent);
-
-                            break;
-
-                    }
-
-
-                }
-
-                tableData.put(data.get("dtTxt").toString(), data);
-                Log.i("WSX", "getLocalForecastData: "+data.keySet() +"|"+data.size() +" | "+data+ "| "+data.get("dtTxt").toString());
-            }while (forecastCursor.moveToNext());
-        }
-
-        Log.i("WSX", "getLocalForecastData: table data "+"|"+tableData);
-        return tableData;
-    }
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);

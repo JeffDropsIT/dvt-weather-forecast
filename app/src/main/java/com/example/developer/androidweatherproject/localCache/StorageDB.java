@@ -7,9 +7,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
 public class StorageDB {
@@ -82,6 +84,69 @@ public class StorageDB {
 
 
 
+
+
+    public Map<String, Object> getDayForecast(String currentForecastTime){
+        Map<String, Map<String, Object> > forecastData = getLocalForecastData();
+        Log.i("WSX", "confusion: currentForecastTime "+currentForecastTime);
+        Log.i("WSX", "confusion: "+ forecastData.get(currentForecastTime));
+        return forecastData.get(currentForecastTime);
+
+    }
+    public Map<String, Map<String, Object>> getLocalForecastData(){
+
+
+        String[] tableCols = getColumnNames();
+        Cursor forecastCursor;
+        forecastCursor = getCacheWeatherData();
+        Log.i("WSX", "count: "+forecastCursor.getCount());
+        Map<String, Map<String, Object>> tableData = new HashMap<>();
+        if(forecastCursor.moveToNext()){
+            do{
+                Map<String, Object> data = new HashMap<>();
+                for(int i = 0 ; i < tableCols.length ; i++){
+                    String colContent = forecastCursor.getString(forecastCursor.getColumnIndex(tableCols[i]));
+                    Log.i("WSX", "getLocalForecastData: colContent "+colContent);
+                    switch (tableCols[i]){
+                        case "dt":
+                            data.put("dt", colContent);
+                            break;
+                        case "dtTxt":
+                            data.put("dtTxt", colContent);
+                            break;
+                        case "icon":
+                            data.put("icon", colContent);
+                            break;
+                        case "main":
+                            data.put("main", colContent);
+                            break;
+                        case "tempMax":
+                            data.put("tempMax", colContent);
+                            break;
+                        case "tempMin":
+                            data.put("tempMin", colContent);
+                            break;
+                        case "temperature":
+                            data.put("temperature", colContent);
+                            break;
+                        case "id":
+                            data.put("id", colContent);
+
+                            break;
+
+                    }
+
+
+                }
+
+                tableData.put(data.get("dtTxt").toString(), data);
+                Log.i("WSX", "getLocalForecastData: "+data.keySet() +"|"+data.size() +" | "+data+ "| "+data.get("dtTxt").toString());
+            }while (forecastCursor.moveToNext());
+        }
+
+        Log.i("WSX", "getLocalForecastData: table data "+"|"+tableData);
+        return tableData;
+    }
 
     private static void checkForNullKey(String key){
         if (key == null){
