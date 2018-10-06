@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
     TextView ttvCurrent, ttvMin, ttvMax;
     TextView ttvDay1, ttvDay2, ttvDay3, ttvDay4, ttvDay5;
     ArrayList<TextView> daysTextViewList;
-
+    private static ConnectivityManager connectivityManager;
 
 
     public static StorageDB getStorageDBServer(){
@@ -47,7 +47,8 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
         if(isNetworkAvailable()){
             new HttpRequestTask(this).execute("21.21","22.22");
@@ -248,9 +249,8 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
     }
 
 
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+    public static boolean isNetworkAvailable() {
+
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }

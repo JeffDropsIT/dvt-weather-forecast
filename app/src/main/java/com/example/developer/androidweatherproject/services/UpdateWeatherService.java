@@ -9,14 +9,18 @@ import android.util.Log;
 import com.example.developer.androidweatherproject.MainActivity;
 import com.example.developer.androidweatherproject.weatherPackages.apiCall.HttpRequestTask;
 
+import static com.example.developer.androidweatherproject.MainActivity.isNetworkAvailable;
+
 public class UpdateWeatherService extends Service{
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         Log.i("WSX", "onStartCommand: get data from cache or network");
-        if(MainActivity.getStorageDBServer() != null){
+        if(MainActivity.getStorageDBServer() != null && isNetworkAvailable() ){
             new HttpRequestTask().execute("21.21","22.22");
+        }else{
+            Log.i("WSX", "onStartCommand: no internet connection or database not initialized");
         }
         return super.onStartCommand(intent, flags, startId);
     }

@@ -21,40 +21,6 @@ public class WeatherObject {
 
     }
 
-    public String getDayOfWeek(){
-        String dayOfWeek, fullDatePattern = YYYY_MM_DD_HH_MM_SS, dayPattern = "EEEE";
-        Date fullDateFormat = null;
-        SimpleDateFormat dayFormat = new SimpleDateFormat(dayPattern);
-        try {
-            fullDateFormat =  new SimpleDateFormat(fullDatePattern).parse(getDt_txt());
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        if(fullDateFormat != null){
-           dayOfWeek = dayFormat.format(fullDateFormat);
-            return dayOfWeek;
-        }else {
-            return "null";
-        }
-
-    }
-    public String getDayOfWeek(String dtTxt){
-        String dayOfWeek, fullDatePattern = "yyyy-MM-dd HH:mm:ss", dayPattern = "EEEE";
-        Date fullDateFormat = null;
-        SimpleDateFormat dayFormat = new SimpleDateFormat(dayPattern);
-        try {
-            fullDateFormat =  new SimpleDateFormat(fullDatePattern).parse(dtTxt);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        if(fullDateFormat != null){
-            dayOfWeek = dayFormat.format(fullDateFormat);
-            return dayOfWeek;
-        }else {
-            return "null";
-        }
-
-    }
     public Main getMain() {
         return main;
     }
