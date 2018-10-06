@@ -127,8 +127,6 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
         currentForecastCal.set(Calendar.HOUR_OF_DAY, currentForecastTime);
         currentForecastCal.set(Calendar.MINUTE, 0);
         currentForecastCal.set(Calendar.SECOND, 0);
-
-
         String currentForecastDate = dayFormat.format(currentForecastCal.getTime());
 
         return currentForecastDate;
@@ -141,8 +139,6 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
         timeTillUpdateCal.set(Calendar.MINUTE, 0);
         timeTillUpdateCal.set(Calendar.SECOND, 0);
 
-
-
         return timeTillUpdateCal;
     }
 
@@ -153,15 +149,14 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
         timeTillUpdateCal.set(Calendar.HOUR_OF_DAY, futureForecastTime);
         timeTillUpdateCal.set(Calendar.MINUTE, 0);
         timeTillUpdateCal.set(Calendar.SECOND, 0);
-
-
         String timeTillUpdate = dayFormat.format(timeTillUpdateCal.getTime());
 
         return timeTillUpdate;
     }
-    private void updateWeatherInfo(){
 
 
+
+    private int[] calculateForecastHours(){
         int currentHour  = getCurrentHour();
         int remainderNxtHour = currentHour % 3;
         int currentForecastHour = currentHour;
@@ -179,18 +174,21 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
             currentHour += 1;
             currentForecastHour -= 2;
         }
-
         int futureForecastHour = currentHour;
-
-        Log.i("WSX", "updateWeatherInfo: futureforecast hour "+futureForecastHour);
-
-        Log.i("WSX", "updateWeatherInfo: currentForecast hour "+currentForecastHour);
-
+        return new int[]{ futureForecastHour , currentForecastHour};
+    }
+    private void updateWeatherInfo(){
 
 
+        int currentForecastHour = calculateForecastHours()[1];
+        int futureForecastHour = calculateForecastHours()[0];
         String currentForecastDate = getCurrentForecastDate(currentForecastHour);
-        Log.i("WSX", "updateWeatherInfo: currentForecastDate "+currentForecastDate);
         storageDBServer.getDayForecast(currentForecastDate);
+
+        Log.i("WSX", "updateWeatherInfo: futureForecast hour "+futureForecastHour);
+        Log.i("WSX", "updateWeatherInfo: currentForecast hour "+currentForecastHour);
+        Log.i("WSX", "updateWeatherInfo: currentForecastDate "+currentForecastDate);
+
 
         Intent updateIntent = new Intent(this, UpdateWeatherService.class);
         PendingIntent alarmIntent = PendingIntent.getService(this, 0, updateIntent, 0);
@@ -200,13 +198,12 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
         long interval =  60 * 1000;  //60 * 60 * 1000 * 3; //180 minutes
         String timeTillUpdate = getNxtForecastDate(futureForecastHour);
         Calendar timeTillUpdateCal = getNxtForecastCalender(futureForecastHour);
-
-        Log.i("WSX", "updateWeatherInfo: ddddd "+timeTillUpdate);
-
-
         long timeTillUpdateLong = timeTillUpdateCal.getTimeInMillis();
+
+
         Log.i("WSX", "updateWeatherInfo: timeTillUpdate "+timeTillUpdate);
-        manager.setRepeating(AlarmManager.RTC_WAKEUP, 10000, interval, alarmIntent);
+
+        manager.setRepeating(AlarmManager.RTC_WAKEUP, 10000, interval, alarmIntent); //update every three hours
 
 
 
