@@ -94,6 +94,9 @@ public class StorageDB {
 
     }
 
+    private static void clearCache(){
+        mDatabase.execSQL("DELETE FROM "+ WEATHER_FORECAST);
+    }
 
     private ArrayList<String> sortDays(ArrayList<String> datestring){
         Log.i("WSX", "sort  unsortedDays: "+datestring);
@@ -180,6 +183,7 @@ public class StorageDB {
 
     public Map<String, Object> getDayForecast(String currentForecastTime){
         Map<String, Map<String, Object> > forecastData = getLocalForecastData();
+        Log.i("WSX", "confusion: forecastData "+forecastData);
         Log.i("WSX", "confusion: currentForecastTime "+currentForecastTime);
         Log.i("WSX", "confusion: "+ forecastData.get(currentForecastTime));
         return forecastData.get(currentForecastTime);

@@ -161,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
         ArrayList<String> weekDaysIcons = storageDBServer.getWeatherForecast().get("main");
         Log.i("WSX", "setWeekForecastIcons  icons "+weekDaysIcons);
         if(!weekDaysIcons.isEmpty() && !iconsTextViewList.isEmpty()){
-            weekDaysIcons.remove(0);
+            //weekDaysIcons.remove(0);
             if(weekDaysIcons.size() == iconsTextViewList.size()){
                 for(int i = 0; i < iconsTextViewList.size(); i++){
 
@@ -180,7 +180,7 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
                     Log.i("WSX", "setWeekForecastIcons  day "+i);
                 }
             }else {
-                Log.i("WSX", "setWeekForecastIcons: something went wrong size does not match");
+                Log.i("WSX", "setWeekForecastIcons: something went wrong size does not match weekDaysIcons.size()"+weekDaysIcons.size()+"|"+iconsTextViewList.size());
             }
         }else {
             Log.i("WSX", "setWeekForecastIcons: something went wrong list empty");
@@ -193,7 +193,7 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
         ArrayList<String> weekDaysTemp = storageDBServer.getWeatherForecast().get("temp");
         Log.i("WSX", "setWeekForecastTemps  temps "+weekDaysTemp);
         if(!weekDaysTemp.isEmpty() && !tempsTextViewList.isEmpty()){
-            weekDaysTemp.remove(0);
+            //weekDaysTemp.remove(0);
             if(weekDaysTemp.size() == tempsTextViewList.size()){
                 for(int i = 0; i < tempsTextViewList.size(); i++){
 
@@ -202,7 +202,8 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
                     Log.i("WSX", "setWeekForecastTemps  day "+i+" "+weekDaysTemp.get(i));
                 }
             }else {
-                Log.i("WSX", "setWeekForecastTemps: something went wrong size does not match");
+                Log.i("WSX", "setWeekForecastTemps: something went wrong size does not match ");
+                Log.i("WSX", "setWeekForecastIcons: something went wrong size does not match weekDaysIcons.size()"+weekDaysTemp.size()+"|"+iconsTextViewList.size());
             }
         }else {
             Log.i("WSX", "setWeekForecastTemps: something went wrong list empty");
@@ -347,7 +348,7 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
         String currentForecastDate = getCurrentForecastDate(currentForecastHour);
         currentDayForecast =  storageDBServer.getDayForecast(currentForecastDate);
 
-        if(!currentDayForecast.isEmpty()){
+        if(currentDayForecast != null){
             current = currentDayForecast.get(CURRENT_TEMPERATURE).toString();
             min = currentDayForecast.get(TEMP_MIN).toString();
             max = currentDayForecast.get(TEMP_MAX).toString();
@@ -365,7 +366,7 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
     private void displayWeekDays(){
         ArrayList<String> weekDays = storageDBServer.getWeatherForecast().get("days");
         if(!weekDays.isEmpty() && !daysTextViewList.isEmpty()){
-            weekDays.remove(0);
+            //weekDays.remove(0);
             if(weekDays.size() == daysTextViewList.size()){
                 for(int i = 0; i < daysTextViewList.size(); i++){
                     daysTextViewList.get(i).setText(weekDays.get(i));
