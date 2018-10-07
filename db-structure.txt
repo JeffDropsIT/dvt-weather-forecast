@@ -1,0 +1,15 @@
+main
+
+|temp|temp_min|temp_max|dt|id|main|icon|dt_txt|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|

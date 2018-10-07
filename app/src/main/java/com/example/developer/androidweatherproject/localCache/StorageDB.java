@@ -25,7 +25,7 @@ import static com.example.developer.androidweatherproject.weatherPackages.Weathe
 
 public class StorageDB {
 
-
+    private final String MIDDAY = "12:00:00";
     public static final String WEATHER_FORECAST = "WeatherForecast";
     private static SQLiteDatabase mDatabase;
     public StorageDB(SQLiteDatabase db){
@@ -112,11 +112,13 @@ public class StorageDB {
         Log.i("WSX", "sort sortDays: "+datestring);
         return datestring;
     }
-    public ArrayList getAllWeekDays(){
+    public  Map< String, ArrayList<String>> getWeatherForecast(){
         ArrayList<String> daysOfWeek = new ArrayList<>();
         ArrayList<String> dtTxtList = new ArrayList<>();
-
-
+        ArrayList<String> mainList = new ArrayList<>();
+        ArrayList<String> tempList = new ArrayList<>();
+        ArrayList<String> debugdays = new ArrayList<>();
+        Map< String, ArrayList<String>> weatherList = new HashMap<>();
 
         Set dtTxtSet = getLocalForecastData().keySet();
         dtTxtList.addAll(dtTxtSet);
@@ -128,18 +130,50 @@ public class StorageDB {
 
         for(int i = 0;  i < dtTxtList.size(); i++){
             String dtTxt = dtTxtList.get(i);
-            String tmpDay =  getDayOfWeek(dtTxt);
-            if(!daysOfWeek.contains(tmpDay)){
-                daysOfWeek.add(tmpDay);
-                Log.i("WSX", "WEEKLIST: "+tmpDay);
+
+            String day =  getDayOfWeek(dtTxt);
+            if(!daysOfWeek.contains(day)){
+                String dtMidday = dtTxt.split(" ")[0]+" "+MIDDAY;
+
+
+                if(dtTxtList.contains(dtMidday)){
+                    Log.i("WSX", "MIDDAY dtMidday: temp "+dtMidday);
+                    String main = getLocalForecastData().get(dtMidday).get("main").toString();
+                    String temp = getLocalForecastData().get(dtMidday).get("temperature").toString();
+                    daysOfWeek.add(day);
+                    tempList.add(temp);
+                    mainList.add(main);
+                    debugdays.add(dtMidday);
+                    Log.i("WSX", "WEEKLIST dtMidday: temp "+temp);
+                    Log.i("WSX", "WEEKLIST dtMidday: main "+main);
+                    Log.i("WSX", "WEEKLIST dtMidday: "+day);
+                }else {
+                    Log.i("WSX", "MIDDAY: temp "+dtTxt);
+                    String main = getLocalForecastData().get(dtTxt).get("main").toString();
+                    String temp = getLocalForecastData().get(dtTxt).get("temperature").toString();
+                    daysOfWeek.add(day);
+                    tempList.add(temp);
+                    mainList.add(main);
+                    debugdays.add(dtTxt);
+                    Log.i("WSX", "WEEKLIST: temp "+temp);
+                    Log.i("WSX", "WEEKLIST: main "+main);
+                    Log.i("WSX", "WEEKLIST: "+day);
+                }
+
             }
 
         }
 
-
-
-        return daysOfWeek;
+        Log.i("WSX", "WEEKLIST1: debugdays "+debugdays);
+        Log.i("WSX", "WEEKLIST1: temp "+tempList);
+        Log.i("WSX", "WEEKLIST1: main "+mainList);
+        weatherList.put("days",daysOfWeek);
+        weatherList.put("main",mainList);
+        weatherList.put("temp",tempList);
+        return  weatherList;
     }
+
+
 
 
     public Map<String, Object> getDayForecast(String currentForecastTime){

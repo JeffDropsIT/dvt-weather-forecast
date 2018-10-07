@@ -18,7 +18,7 @@ public class UpdateWeatherService extends Service{
 
         Log.i("WSX", "onStartCommand: get data from cache or network");
         if(MainActivity.getStorageDBServer() != null && isNetworkAvailable() ){
-            new HttpRequestTask().execute("21.21","22.22");
+            new HttpRequestTask().execute("-29.844776","31.014339");
         }else{
             Log.i("WSX", "onStartCommand: no internet connection or database not initialized");
         }

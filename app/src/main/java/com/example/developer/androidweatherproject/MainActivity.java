@@ -11,6 +11,7 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.developer.androidweatherproject.localCache.StorageDB;
@@ -37,7 +38,12 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
     public static StorageDB storageDBServer;
     TextView ttvCurrent, ttvMin, ttvMax;
     TextView ttvDay1, ttvDay2, ttvDay3, ttvDay4, ttvDay5;
+    TextView ttvTemp1, ttvTemp2, ttvTemp3, ttvTemp4, ttvTemp5;
+    ImageView ttvIcon1, ttvIcon2, ttvIcon3, ttvIcon4, ttvIcon5;
     ArrayList<TextView> daysTextViewList;
+    ArrayList<ImageView> iconsTextViewList;
+    ArrayList<TextView> tempsTextViewList;
+    private final char DEGREES_SYMBOL = (char) 0x00B0; // degree symbol
     private static ConnectivityManager connectivityManager;
     public static SharedPreferences preferences;
 
@@ -72,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
 
         //if internet connection update cache else do nothing for now
         if(isNetworkAvailable()){
-            new HttpRequestTask(this).execute("21.21","22.22");
+            new HttpRequestTask(this).execute("-29.844776","31.014339");
             Log.i("WSX", "onCreate: internet connection ");
         }else{
             Log.i("WSX", "onCreate: no internet connection ");
@@ -83,6 +89,8 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
 
 
         daysTextViewList = new ArrayList<>();
+        iconsTextViewList = new ArrayList<>();
+        tempsTextViewList = new ArrayList<>();
         ttvCurrent = findViewById(R.id.ttv_current);
         ttvMin = findViewById(R.id.ttv_min);
         ttvMax = findViewById(R.id.ttv_max);
@@ -94,13 +102,37 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
         ttvDay5 = findViewById(R.id.ttv_day5);
 
 
+        ttvIcon1 = findViewById(R.id.ttv_icon1);
+        ttvIcon2 = findViewById(R.id.ttv_icon2);
+        ttvIcon3 = findViewById(R.id.ttv_icon3);
+        ttvIcon4 = findViewById(R.id.ttv_icon4);
+        ttvIcon5 = findViewById(R.id.ttv_icon5);
+
+        ttvTemp1 = findViewById(R.id.ttv_temp1);
+        ttvTemp2 = findViewById(R.id.ttv_temp2);
+        ttvTemp3 = findViewById(R.id.ttv_temp3);
+        ttvTemp4 = findViewById(R.id.ttv_temp4);
+        ttvTemp5 = findViewById(R.id.ttv_temp5);
+
+
         daysTextViewList.add(ttvDay1);
         daysTextViewList.add(ttvDay2);
         daysTextViewList.add(ttvDay3);
         daysTextViewList.add(ttvDay4);
         daysTextViewList.add(ttvDay5);
 
+        iconsTextViewList.add(ttvIcon1);
+        iconsTextViewList.add(ttvIcon2);
+        iconsTextViewList.add(ttvIcon3);
+        iconsTextViewList.add(ttvIcon4);
+        iconsTextViewList.add(ttvIcon5);
 
+
+        tempsTextViewList.add(ttvTemp1);
+        tempsTextViewList.add(ttvTemp2);
+        tempsTextViewList.add(ttvTemp3);
+        tempsTextViewList.add(ttvTemp4);
+        tempsTextViewList.add(ttvTemp5);
 
 
 
@@ -112,6 +144,60 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
         preferences.edit().putBoolean(key, value).apply();
     }
 
+    private void setWeekForecastIcons(){
+        ArrayList<String> weekDaysIcons = storageDBServer.getWeatherForecast().get("main");
+        Log.i("WSX", "setWeekForecastIcons  icons "+weekDaysIcons);
+        if(!weekDaysIcons.isEmpty() && !iconsTextViewList.isEmpty()){
+            weekDaysIcons.remove(0);
+            if(weekDaysIcons.size() == iconsTextViewList.size()){
+                for(int i = 0; i < iconsTextViewList.size(); i++){
+
+
+                    if(weekDaysIcons.get(i).toString().contains("Clear")){
+                        iconsTextViewList.get(i).setImageResource(R.drawable.clear);
+                        Log.i("WSX", "setWeekForecastIcons  cond "+weekDaysIcons.get(i));
+                    }else if(weekDaysIcons.get(i).toString().contains("Clouds")){
+                        iconsTextViewList.get(i).setImageResource(R.drawable.partlysunny);
+                        Log.i("WSX", "setWeekForecastIcons  cond "+weekDaysIcons.get(i));
+                    }else if(weekDaysIcons.get(i).toString().contains("Rain")){
+                        iconsTextViewList.get(i).setImageResource(R.drawable.rain);
+                        Log.i("WSX", "setWeekForecastIcons  cond "+weekDaysIcons.get(i));
+                    }
+
+                    Log.i("WSX", "setWeekForecastIcons  day "+i);
+                }
+            }else {
+                Log.i("WSX", "setWeekForecastIcons: something went wrong size does not match");
+            }
+        }else {
+            Log.i("WSX", "setWeekForecastIcons: something went wrong list empty");
+        }
+
+    }
+
+    private void setWeekForecastTemps(){
+
+        ArrayList<String> weekDaysTemp = storageDBServer.getWeatherForecast().get("temp");
+        Log.i("WSX", "setWeekForecastTemps  temps "+weekDaysTemp);
+        if(!weekDaysTemp.isEmpty() && !tempsTextViewList.isEmpty()){
+            weekDaysTemp.remove(0);
+            if(weekDaysTemp.size() == tempsTextViewList.size()){
+                for(int i = 0; i < tempsTextViewList.size(); i++){
+
+
+                    tempsTextViewList.get(i).setText(weekDaysTemp.get(i)+DEGREES_SYMBOL);
+                    Log.i("WSX", "setWeekForecastTemps  day "+i+" "+weekDaysTemp.get(i));
+                }
+            }else {
+                Log.i("WSX", "setWeekForecastTemps: something went wrong size does not match");
+            }
+        }else {
+            Log.i("WSX", "setWeekForecastTemps: something went wrong list empty");
+        }
+
+    }
+
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -122,7 +208,7 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
     protected void onResume() {
         super.onResume();
         if(isNetworkAvailable()){
-            new HttpRequestTask(this).execute("21.21","22.22");
+            new HttpRequestTask(this).execute("-29.844776","31.014339");
             Log.i("WSX", "onResume: internet connection ");
         }else{
             Log.i("WSX", "onResume: no internet connection ");
@@ -137,6 +223,8 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
         updateWeatherInfo();
         displayWeekDays();
         displayWeatherInfo();
+        setWeekForecastIcons();
+        setWeekForecastTemps();
     }
     private int getCurrentHour(){
 
@@ -255,14 +343,14 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
         Log.i("WSX", "updateWeatherInfo: currentForecast hour "+currentForecastHour);
         Log.i("WSX", "updateWeatherInfo: currentForecastDate "+currentForecastDate);
         Log.i("WSX", "displayWeatherInfo: "+current+" "+min+" "+max);
-        char degrees = (char) 0x00B0; // degree symbol
-        ttvCurrent.setText(current+degrees);
-        ttvMax.setText(max+degrees);
-        ttvMin.setText(min+degrees);
+
+        ttvCurrent.setText(current+DEGREES_SYMBOL);
+        ttvMax.setText(max+DEGREES_SYMBOL);
+        ttvMin.setText(min+DEGREES_SYMBOL);
     }
 
     private void displayWeekDays(){
-        ArrayList<String> weekDays = storageDBServer.getAllWeekDays();
+        ArrayList<String> weekDays = storageDBServer.getWeatherForecast().get("days");
         if(!weekDays.isEmpty() && !daysTextViewList.isEmpty()){
             weekDays.remove(0);
             if(weekDays.size() == daysTextViewList.size()){
