@@ -12,6 +12,9 @@
         android:src="@drawable/forest_sunny" />
 
 
+
+
+
     <LinearLayout
         android:id="@+id/lin_header_temperature"
         android:layout_width="match_parent"

@@ -11,7 +11,9 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.developer.androidweatherproject.localCache.StorageDB;
@@ -46,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
     private final char DEGREES_SYMBOL = (char) 0x00B0; // degree symbol
     private static ConnectivityManager connectivityManager;
     public static SharedPreferences preferences;
-
+    private ProgressBar progressBar;
 
 
     public static StorageDB getStorageDBServer(){
@@ -135,6 +137,17 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
         tempsTextViewList.add(ttvTemp5);
 
 
+
+    }
+
+    public ProgressBar getProgressBar(){
+        View progressView = getLayoutInflater().inflate(
+                R.layout.progress_bar_layout, null);
+        // Find the progressbar within footer
+        progressBar =
+                progressView.findViewById(R.id.indeterminateBar);
+
+        return progressBar;
 
     }
     private boolean getBoolean(String key) {

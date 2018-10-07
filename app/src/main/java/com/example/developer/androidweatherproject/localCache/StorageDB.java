@@ -112,6 +112,8 @@ public class StorageDB {
         Log.i("WSX", "sort sortDays: "+datestring);
         return datestring;
     }
+
+    //fuction too coupled
     public  Map< String, ArrayList<String>> getWeatherForecast(){
         ArrayList<String> daysOfWeek = new ArrayList<>();
         ArrayList<String> dtTxtList = new ArrayList<>();

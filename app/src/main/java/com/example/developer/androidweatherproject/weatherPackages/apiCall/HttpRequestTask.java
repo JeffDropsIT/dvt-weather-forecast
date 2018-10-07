@@ -3,6 +3,7 @@ package com.example.developer.androidweatherproject.weatherPackages.apiCall;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.developer.androidweatherproject.MainActivity;
@@ -81,6 +82,11 @@ public class HttpRequestTask extends AsyncTask<String, Void, WeekForecast> {
 
         Map<String, Object> weatherForecastMap = new HashMap<>();
 
+        if(weekForecast == null){
+            Log.i("WSX", "cacheWeatherData: no data form server");
+
+            return;
+        }
         for(int i = 0; i < weekForecast.getList().size(); i++){
             Main main = weekForecast.getList().get(i).getMain();
             WeatherObject weatherObject = weekForecast.getList().get(i);
