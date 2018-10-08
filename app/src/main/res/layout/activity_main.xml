@@ -78,7 +78,7 @@
             android:layout_height="wrap_content"
             android:textColor="#fafafa"
             android:textSize="15dp"
-            android:layout_marginLeft="30dp"
+            android:layout_marginLeft="20dp"
             android:layout_weight="1"
             android:text="0"/>
 
@@ -86,20 +86,19 @@
             android:id="@+id/ttv_current"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
+            android:textAlignment="center"
             android:textColor="#fafafa"
+            android:layout_marginRight="10dp"
             android:textSize="15dp"
-            android:layout_gravity="center"
             android:layout_weight="1"
             android:text="0"/>
         <TextView
             android:id="@+id/ttv_max"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
+           android:textAlignment="center"
             android:textColor="#fafafa"
             android:textSize="15dp"
-            android:layout_gravity="center"
             android:layout_weight="1"
             android:text="0"/>
 
@@ -117,9 +116,9 @@
             android:layout_height="wrap_content"
             android:textColor="#fafafa"
             android:textSize="15dp"
-            android:layout_marginLeft="30dp"
+            android:layout_marginLeft="20dp"
             android:layout_weight="1"
-            android:text="Min"/>
+            android:text="min"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -135,9 +134,11 @@
             android:layout_height="wrap_content"
             android:textColor="#fafafa"
             android:textSize="15dp"
+
+            android:layout_marginLeft="10dp"
             android:gravity="center_horizontal"
             android:layout_weight="1"
-            android:text="Max"/>
+            android:text="max"/>
 
     </LinearLayout>
     <View
@@ -170,7 +171,7 @@
                 android:textSize="14dp"
                 android:textStyle="normal"
                 android:textColor="#fafafa"
-                android:layout_marginLeft="30dp"
+                android:layout_marginLeft="20dp"
                 android:text="Monday"/>
             <TextView
                 android:id="@+id/ttv_day2"
@@ -182,7 +183,7 @@
                 android:textSize="14dp"
                 android:textStyle="normal"
                 android:textColor="#fafafa"
-                android:layout_marginLeft="30dp"
+                android:layout_marginLeft="20dp"
                 android:text="Tuesday"/>
             <TextView
                 android:id="@+id/ttv_day3"
@@ -194,7 +195,7 @@
                 android:textSize="14dp"
                 android:textStyle="normal"
                 android:textColor="#fafafa"
-                android:layout_marginLeft="30dp"
+                android:layout_marginLeft="20dp"
                 android:text="Wednesday"/>
             <TextView
                 android:id="@+id/ttv_day4"
@@ -206,7 +207,7 @@
                 android:textSize="14dp"
                 android:textStyle="normal"
                 android:textColor="#fafafa"
-                android:layout_marginLeft="30dp"
+                android:layout_marginLeft="20dp"
                 android:text="Thursday"/>
             <TextView
                 android:id="@+id/ttv_day5"
@@ -218,7 +219,7 @@
                 android:textSize="14dp"
                 android:textStyle="normal"
                 android:textColor="#fafafa"
-                android:layout_marginLeft="30dp"
+                android:layout_marginLeft="20dp"
                 android:text="Friday"/>
 
         </LinearLayout>
