@@ -1,17 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <ImageView
-        android:id="@+id/img_forecast"
+
+
+
+
+
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:src="@drawable/forest_sunny" />
+        android:layout_height="wrap_content">
 
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:elevation="4dp"
+            app:theme="@style/CustomToolBarTheme"/>
+        <ImageView
+            android:id="@+id/img_forecast"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/forest_sunny" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:layout_centerVertical="true"
+            android:layout_below="@+id/toolbar"
+            android:orientation="vertical">
 
+            <TextView
+                android:id="@+id/ttv_current_temp_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="25"
+                android:textAllCaps="true"
+                android:textColor="#fafafa"
+                android:textSize="50dp"
+                android:textStyle="normal" />
+
+            <TextView
+                android:id="@+id/ttv_current_temp_cover"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sunny"
+                android:textAllCaps="true"
+
+                android:textColor="#fafafa"
+                android:textSize="22dp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
 
 
 
@@ -19,14 +69,15 @@
         android:id="@+id/lin_header_temperature"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#47AB2F"
+        android:background="@color/colorSunny"
         android:paddingTop="3dp"
-        android:layout_below="@+id/img_forecast"
         android:orientation="horizontal">
         <TextView
             android:id="@+id/ttv_min"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="#fafafa"
+            android:textSize="15dp"
             android:layout_marginLeft="30dp"
             android:layout_weight="1"
             android:text="0"/>
@@ -36,6 +87,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:textColor="#fafafa"
+            android:textSize="15dp"
             android:layout_gravity="center"
             android:layout_weight="1"
             android:text="0"/>
@@ -44,43 +97,47 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:textColor="#fafafa"
+            android:textSize="15dp"
             android:layout_gravity="center"
             android:layout_weight="1"
             android:text="0"/>
 
     </LinearLayout>
-
     <LinearLayout
         android:id="@+id/lin_header_headings"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#47AB2F"
+        android:background="@color/colorSunny"
         android:paddingTop="2dp"
-
         android:paddingBottom="5dp"
-        android:layout_below="@+id/lin_header_temperature"
         android:orientation="horizontal">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="#fafafa"
+            android:textSize="15dp"
             android:layout_marginLeft="30dp"
             android:layout_weight="1"
-            android:text="min"/>
+            android:text="Min"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:layout_gravity="center"
+            android:textColor="#fafafa"
+            android:textSize="15dp"
             android:layout_weight="1"
-            android:text="current"/>
+            android:text="Current"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
+            android:textColor="#fafafa"
+            android:textSize="15dp"
             android:gravity="center_horizontal"
             android:layout_weight="1"
-            android:text="max"/>
+            android:text="Max"/>
 
     </LinearLayout>
     <View
@@ -88,49 +145,79 @@
         android:layout_width="wrap_content"
         android:layout_height="1px"
         android:background="@drawable/drop_shadow"
-        android:layout_below="@+id/lin_header_headings"
         />
     <LinearLayout
+        android:id="@+id/lin_week_forecast"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
+
         android:layout_below="@+id/shadow"
-        android:background="#47AB2F">
+        android:background="@color/colorSunny">
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="5dp"
             android:layout_weight="1">
             <TextView
                 android:id="@+id/ttv_day1"
                 android:layout_width="wrap_content"
-                android:layout_height="20dp"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp"
+                android:paddingBottom="5dp"
+                android:paddingRight="4dp"
+                android:textSize="14dp"
+                android:textStyle="normal"
+                android:textColor="#fafafa"
                 android:layout_marginLeft="30dp"
                 android:text="Monday"/>
             <TextView
                 android:id="@+id/ttv_day2"
                 android:layout_width="wrap_content"
-
-                android:layout_height="20dp"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp"
+                android:paddingBottom="5dp"
+                android:paddingRight="4dp"
+                android:textSize="14dp"
+                android:textStyle="normal"
+                android:textColor="#fafafa"
                 android:layout_marginLeft="30dp"
                 android:text="Tuesday"/>
             <TextView
                 android:id="@+id/ttv_day3"
                 android:layout_width="wrap_content"
-                android:layout_height="20dp"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp"
+                android:paddingBottom="5dp"
+                android:paddingRight="4dp"
+                android:textSize="14dp"
+                android:textStyle="normal"
+                android:textColor="#fafafa"
                 android:layout_marginLeft="30dp"
                 android:text="Wednesday"/>
             <TextView
                 android:id="@+id/ttv_day4"
                 android:layout_width="wrap_content"
-                android:layout_height="20dp"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp"
+                android:paddingBottom="5dp"
+                android:paddingRight="4dp"
+                android:textSize="14dp"
+                android:textStyle="normal"
+                android:textColor="#fafafa"
                 android:layout_marginLeft="30dp"
                 android:text="Thursday"/>
             <TextView
                 android:id="@+id/ttv_day5"
                 android:layout_width="wrap_content"
-                android:layout_height="20dp"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp"
+                android:paddingBottom="5dp"
+                android:paddingRight="4dp"
+                android:textSize="14dp"
+                android:textStyle="normal"
+                android:textColor="#fafafa"
                 android:layout_marginLeft="30dp"
                 android:text="Friday"/>
 
@@ -139,44 +226,41 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="6dp"
             android:layout_weight="1">
+
             <ImageView
                 android:id="@+id/ttv_icon1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:paddingTop="8dp"
-                android:src="@drawable/clear"/>
+
+                android:paddingBottom="4dp"
+                android:src="@drawable/clear2x" />
             <ImageView
                 android:id="@+id/ttv_icon2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:paddingTop="8dp"
-                android:src="@drawable/clear"/>
+
+                android:src="@drawable/clear2x"/>
 
             <ImageView
                 android:id="@+id/ttv_icon3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingTop="8dp"
-                android:gravity="center"
-                android:src="@drawable/clear"/>
+
+                android:src="@drawable/clear2x"/>
             <ImageView
                 android:id="@+id/ttv_icon4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingTop="8dp"
-                android:gravity="center"
-                android:src="@drawable/clear"/>
+                android:paddingBottom="2dp"
+                android:src="@drawable/clear2x"/>
             <ImageView
                 android:id="@+id/ttv_icon5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:paddingTop="4dp"
-                android:src="@drawable/clear"/>
+
+                android:src="@drawable/clear2x"/>
 
         </LinearLayout>
         <LinearLayout
@@ -185,52 +269,71 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:gravity="center_horizontal"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="5dp"
             android:layout_weight="1">
             <TextView
                 android:id="@+id/ttv_temp1"
                 android:layout_width="wrap_content"
-                android:layout_height="20dp"
+                android:layout_height="wrap_content"
                 android:gravity="center"
-                android:textSize="16dp"
-                android:paddingBottom="3dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="5dp"
+                android:paddingRight="4dp"
+                android:textSize="14dp"
+                android:textStyle="normal"
+                android:textColor="#fafafa"
                 android:text="0"/>
             <TextView
                 android:id="@+id/ttv_temp2"
                 android:layout_width="wrap_content"
-                android:layout_height="20dp"
-                android:textSize="16dp"
-                android:paddingBottom="3dp"
+                android:layout_height="wrap_content"
                 android:gravity="center"
+                android:paddingTop="4dp"
+                android:paddingBottom="5dp"
+                android:paddingRight="4dp"
+                android:textSize="14dp"
+                android:textStyle="normal"
+                android:textColor="#fafafa"
                 android:text="0"/>
             <TextView
                 android:id="@+id/ttv_temp3"
                 android:layout_width="wrap_content"
-                android:layout_height="20dp"
-                android:textSize="16dp"
-                android:paddingBottom="3dp"
+                android:layout_height="wrap_content"
                 android:gravity="center"
+                android:paddingTop="4dp"
+                android:paddingBottom="5dp"
+                android:paddingRight="4dp"
+                android:textSize="14dp"
+                android:textStyle="normal"
+                android:textColor="#fafafa"
                 android:text="0"/>
             <TextView
                 android:id="@+id/ttv_temp4"
                 android:layout_width="wrap_content"
-                android:layout_height="20dp"
-                android:textSize="16dp"
-                android:paddingBottom="3dp"
+                android:layout_height="wrap_content"
                 android:gravity="center"
+                android:paddingTop="4dp"
+                android:paddingBottom="5dp"
+                android:paddingRight="4dp"
+                android:textSize="14dp"
+                android:textStyle="normal"
+                android:textColor="#fafafa"
                 android:text="0"/>
             <TextView
                 android:id="@+id/ttv_temp5"
                 android:layout_width="wrap_content"
-                android:layout_height="20dp"
-                android:textSize="16dp"
-                android:paddingBottom="3dp"
+                android:layout_height="wrap_content"
                 android:gravity="center"
-                android:textAlignment="center"
+                android:paddingTop="4dp"
+                android:paddingBottom="5dp"
+                android:paddingRight="4dp"
+                android:textSize="14dp"
+                android:textStyle="normal"
+                android:textColor="#fafafa"
                 android:text="0"/>
 
         </LinearLayout>
     </LinearLayout>
 
 
-</RelativeLayout>
+</LinearLayout>

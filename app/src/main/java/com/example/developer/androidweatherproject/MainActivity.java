@@ -1,24 +1,37 @@
 package com.example.developer.androidweatherproject;
+
+import android.Manifest;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
+import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.developer.androidweatherproject.localCache.StorageDB;
 import com.example.developer.androidweatherproject.services.UpdateWeatherService;
 import com.example.developer.androidweatherproject.weatherPackages.apiCall.HttpRequestTask;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -36,36 +49,52 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
     public static final String TEMP_MIN = "tempMin";
     public static final String TEMP_MAX = "tempMax";
     public static final String IS_CACHED = "isDataCached";
-    private SQLiteDatabase weatherDB;
+    private static final int REQUEST_ACCESS_LOCATION_PERMISSIONS = 111 ;
+    public static final String MAIN = "main";
+    public static final String CLEAR = "Clear";
+    public static final String CLOUDS = "Clouds";
+    public static final String RAIN = "Rain";
     public static StorageDB storageDBServer;
-    TextView ttvCurrent, ttvMin, ttvMax;
-    TextView ttvDay1, ttvDay2, ttvDay3, ttvDay4, ttvDay5;
-    TextView ttvTemp1, ttvTemp2, ttvTemp3, ttvTemp4, ttvTemp5;
-    ImageView ttvIcon1, ttvIcon2, ttvIcon3, ttvIcon4, ttvIcon5;
-    ArrayList<TextView> daysTextViewList;
-    ArrayList<ImageView> iconsTextViewList;
-    ArrayList<TextView> tempsTextViewList;
-    private final char DEGREES_SYMBOL = (char) 0x00B0; // degree symbol
     private static ConnectivityManager connectivityManager;
     public static SharedPreferences preferences;
     private ProgressBar progressBar;
+    private SQLiteDatabase weatherDB;
+    private final char DEGREES_SYMBOL = (char) 0x00B0; // degree symbol
+
+    TextView ttvCurrent, ttvMin, ttvMax;
+    TextView ttvDay1, ttvDay2, ttvDay3, ttvDay4, ttvDay5;
+    TextView ttvTemp1, ttvTemp2, ttvTemp3, ttvTemp4, ttvTemp5, ttvCurrentCoverHeader, ttvCurrentTempHeader;
+    ImageView ttvIcon1, ttvIcon2, ttvIcon3, ttvIcon4, ttvIcon5, ImgCoverImage;
+    ArrayList<TextView> daysTextViewList;
+    ArrayList<ImageView> iconsTextViewList;
+    ArrayList<TextView> tempsTextViewList;
+
+    private FusedLocationProviderClient mFusedLocationClient;
+    private LinearLayout linTemps, linHeadings, linWeekForecast;
 
 
-    public static StorageDB getStorageDBServer(){
+    public static StorageDB getStorageDBServer() {
         return storageDBServer;
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        getLastKnownLocation(new OnlocationListener() {
+            @Override
+            public void onLocationComplete() {
+
+            }
+        });
         connectivityManager
                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         //shared prefs value to check whether data has been cached
         preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
-        if(!isNetworkAvailable() && !getBoolean(IS_CACHED)){
+        if (!isNetworkAvailable() && !getBoolean(IS_CACHED)) {
             setContentView(R.layout.error_layout);
-        }else {
+        } else {
             setContentView(R.layout.activity_main);
         }
 
@@ -75,27 +104,19 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
         storageDBServer = new StorageDB(weatherDB);
 
 
-
-
-
-        //if internet connection update cache else do nothing for now
-        if(isNetworkAvailable()){
-            new HttpRequestTask(this).execute("-29.844776","31.014339");
-            Log.i("WSX", "onCreate: internet connection ");
-        }else{
-            Log.i("WSX", "onCreate: no internet connection ");
-        }
-
-
-
-
-
         daysTextViewList = new ArrayList<>();
         iconsTextViewList = new ArrayList<>();
         tempsTextViewList = new ArrayList<>();
+
+        linTemps = findViewById(R.id.lin_header_temperature);
+        linHeadings = findViewById(R.id.lin_header_headings);
+        linWeekForecast = findViewById(R.id.lin_week_forecast);
         ttvCurrent = findViewById(R.id.ttv_current);
         ttvMin = findViewById(R.id.ttv_min);
         ttvMax = findViewById(R.id.ttv_max);
+
+        ttvCurrentTempHeader = findViewById(R.id.ttv_current_temp_header);
+        ttvCurrentCoverHeader = findViewById(R.id.ttv_current_temp_cover);
 
         ttvDay1 = findViewById(R.id.ttv_day1);
         ttvDay2 = findViewById(R.id.ttv_day2);
@@ -116,6 +137,8 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
         ttvTemp4 = findViewById(R.id.ttv_temp4);
         ttvTemp5 = findViewById(R.id.ttv_temp5);
 
+
+        ImgCoverImage = findViewById(R.id.img_forecast);
 
         daysTextViewList.add(ttvDay1);
         daysTextViewList.add(ttvDay2);
@@ -138,9 +161,11 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
 
 
 
+
+
     }
 
-    public ProgressBar getProgressBar(){
+    public ProgressBar getProgressBar() {
         View progressView = getLayoutInflater().inflate(
                 R.layout.progress_bar_layout, null);
         // Find the progressbar within footer
@@ -150,30 +175,124 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
         return progressBar;
 
     }
+
     private boolean getBoolean(String key) {
         return preferences.getBoolean(key, false);
     }
+
     public static void putBoolean(String key, boolean value) {
         preferences.edit().putBoolean(key, value).apply();
     }
+    public static String getString(String key) {
+        return preferences.getString(key, "0");
+    }
+    public static void putString(String key, String value) {
+        preferences.edit().putString(key, value).apply();
+    }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_ACCESS_LOCATION_PERMISSIONS: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                    Log.i("WSX", "onRequestPermissionsResult: Granted");
+                    getLastKnownLocation(new OnlocationListener() {
+                        @Override
+                        public void onLocationComplete() {
+                            Log.i("WSX", "onRequestPermissionsResult: Granted");
+                            if (isNetworkAvailable()) {
+                                new HttpRequestTask(MainActivity.this).execute(getString("lat"),getString("lon") );
+                                Log.i("WSX", "onCreate: internet connection ");
+                            } else {
+                                Log.i("WSX", "onCreate: no internet connection ");
+                            }
+                        }
+                    });
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request.
+     }
+    }
+
+    private void getLastKnownLocation(final OnlocationListener onlocationListener) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.title_location_permission)
+                        .setMessage(R.string.text_location_permission)
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //Prompt the user once explanation has been shown
+                                ActivityCompat.requestPermissions(MainActivity.this,
+                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                        REQUEST_ACCESS_LOCATION_PERMISSIONS);
+                            }
+                        })
+                        .create()
+                        .show();
+            } else {
+                // No explanation needed; request the permission
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                        REQUEST_ACCESS_LOCATION_PERMISSIONS);
+
+                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+            }
+        }
+        mFusedLocationClient.getLastLocation()
+                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        // Got last known location. In some rare situations this can be null.
+                        if (location != null) {
+                            // Logic to handle location object
+
+                            Log.i("WSX", "onSuccess: lat "+location.getLatitude()+" lon "+location.getLongitude());
+                            putString("lat", Double.toString(location.getLatitude()));
+                            putString("lon", Double.toString(location.getLongitude()));
+                            onlocationListener.onLocationComplete();
+
+                        }
+                    }
+                });
+    }
     private void setWeekForecastIcons(){
         ArrayList<String> weekDaysIcons = storageDBServer.getWeatherForecast().get("main");
         Log.i("WSX", "setWeekForecastIcons  icons "+weekDaysIcons);
         if(!weekDaysIcons.isEmpty() && !iconsTextViewList.isEmpty()){
-            //weekDaysIcons.remove(0);
+            if(weekDaysIcons.size() > 5){
+                weekDaysIcons.remove(0);
+            }
             if(weekDaysIcons.size() == iconsTextViewList.size()){
-                for(int i = 0; i < iconsTextViewList.size(); i++){
+
+                for( int i = 0; i < iconsTextViewList.size(); i++){
 
 
-                    if(weekDaysIcons.get(i).toString().contains("Clear")){
-                        iconsTextViewList.get(i).setImageResource(R.drawable.clear);
+                    if(weekDaysIcons.get(i).toString().contains(CLEAR)){
+                        iconsTextViewList.get(i).setImageResource(R.drawable.clear2x);
                         Log.i("WSX", "setWeekForecastIcons  cond "+weekDaysIcons.get(i));
-                    }else if(weekDaysIcons.get(i).toString().contains("Clouds")){
-                        iconsTextViewList.get(i).setImageResource(R.drawable.partlysunny);
+                    }else if(weekDaysIcons.get(i).toString().contains(CLOUDS)){
+                        iconsTextViewList.get(i).setImageResource(R.drawable.partlysunny2x);
                         Log.i("WSX", "setWeekForecastIcons  cond "+weekDaysIcons.get(i));
-                    }else if(weekDaysIcons.get(i).toString().contains("Rain")){
-                        iconsTextViewList.get(i).setImageResource(R.drawable.rain);
+                    }else if(weekDaysIcons.get(i).toString().contains(RAIN)){
+                        iconsTextViewList.get(i).setImageResource(R.drawable.rain2x);
                         Log.i("WSX", "setWeekForecastIcons  cond "+weekDaysIcons.get(i));
                     }
 
@@ -193,8 +312,12 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
         ArrayList<String> weekDaysTemp = storageDBServer.getWeatherForecast().get("temp");
         Log.i("WSX", "setWeekForecastTemps  temps "+weekDaysTemp);
         if(!weekDaysTemp.isEmpty() && !tempsTextViewList.isEmpty()){
-            //weekDaysTemp.remove(0);
+            if(weekDaysTemp.size() > 5){
+                weekDaysTemp.remove(0);
+            }
             if(weekDaysTemp.size() == tempsTextViewList.size()){
+
+
                 for(int i = 0; i < tempsTextViewList.size(); i++){
 
 
@@ -222,11 +345,24 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
     protected void onResume() {
         super.onResume();
         if(isNetworkAvailable()){
-            new HttpRequestTask(this).execute("-29.844776","31.014339");
+            if(!MainActivity.getString("lat").equals("0") && !MainActivity.getString("lon" ).equals("0")){
+                Log.i("WSX", "onResume: lat "+getString("lat")+" lon "+getString("lon"));
+                new HttpRequestTask(this).execute(getString("lat"),getString("lon"));
+            }else {
+                getLastKnownLocation(new OnlocationListener() {
+                    @Override
+                    public void onLocationComplete() {
+
+                    }
+                });
+            }
+            Log.i("WSX", "onResume: lat "+getString("lat")+" lon "+getString("lon"));
+           // new HttpRequestTask(this).execute("-29.844776","31.014339");
             Log.i("WSX", "onResume: internet connection ");
         }else{
             Log.i("WSX", "onResume: no internet connection ");
         }
+
         if(getBoolean(IS_CACHED)){
             updateUI();
         }
@@ -286,6 +422,27 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
     }
 
 
+    private void setAppWeatherTheme(String main){
+        if(main.contains(CLEAR)){
+            ImgCoverImage.setImageResource(R.drawable.forest_sunny);
+            linTemps.setBackgroundResource(R.color.colorSunny);
+            linHeadings.setBackgroundResource(R.color.colorSunny);
+            ttvCurrentCoverHeader.setText("SUNNY");
+            linWeekForecast.setBackgroundResource(R.color.colorSunny);
+        }else if(main.contains(CLOUDS)){
+            ImgCoverImage.setImageResource(R.drawable.forest_cloudy);
+            linTemps.setBackgroundResource(R.color.colorCloudy);
+            ttvCurrentCoverHeader.setText("CLOUDY");
+            linHeadings.setBackgroundResource(R.color.colorCloudy);
+            linWeekForecast.setBackgroundResource(R.color.colorCloudy);
+        }else if(main.contains(RAIN)){
+            ImgCoverImage.setImageResource(R.drawable.forest_rainy);
+            linTemps.setBackgroundResource(R.color.colorRainy);
+            linHeadings.setBackgroundResource(R.color.colorRainy);
+            ttvCurrentCoverHeader.setText("RAINY");
+            linWeekForecast.setBackgroundResource(R.color.colorRainy);
+        }
+    }
 
     private int[] calculateForecastHours(){
         int currentHour  = getCurrentHour();
@@ -347,17 +504,20 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
         Map<String, Object> currentDayForecast;
         String currentForecastDate = getCurrentForecastDate(currentForecastHour);
         currentDayForecast =  storageDBServer.getDayForecast(currentForecastDate);
-
+        String main = currentDayForecast.get(MAIN).toString();
         if(currentDayForecast != null){
             current = currentDayForecast.get(CURRENT_TEMPERATURE).toString();
             min = currentDayForecast.get(TEMP_MIN).toString();
             max = currentDayForecast.get(TEMP_MAX).toString();
+
+            setAppWeatherTheme(main);
+
         }
 
         Log.i("WSX", "updateWeatherInfo: currentForecast hour "+currentForecastHour);
         Log.i("WSX", "updateWeatherInfo: currentForecastDate "+currentForecastDate);
         Log.i("WSX", "displayWeatherInfo: "+current+" "+min+" "+max);
-
+        ttvCurrentTempHeader.setText(current+DEGREES_SYMBOL);
         ttvCurrent.setText(current+DEGREES_SYMBOL);
         ttvMax.setText(max+DEGREES_SYMBOL);
         ttvMin.setText(min+DEGREES_SYMBOL);
@@ -367,6 +527,9 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
         ArrayList<String> weekDays = storageDBServer.getWeatherForecast().get("days");
         if(!weekDays.isEmpty() && !daysTextViewList.isEmpty()){
             //weekDays.remove(0);
+            if(weekDays.size() > 5){
+                weekDays.remove(0);
+            }
             if(weekDays.size() == daysTextViewList.size()){
                 for(int i = 0; i < daysTextViewList.size(); i++){
                     daysTextViewList.get(i).setText(weekDays.get(i));
@@ -385,7 +548,8 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
     public static boolean isNetworkAvailable() {
 
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+        Log.i("WSX", "isNetworkAvailable: activeNetworkInfo != null "+(activeNetworkInfo != null));
+        return activeNetworkInfo != null;
     }
 
     @Override
@@ -393,5 +557,9 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
 
         updateUI();
 
+    }
+
+    public interface OnlocationListener{
+         void onLocationComplete();
     }
 }

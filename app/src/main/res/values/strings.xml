@@ -1,4 +1,7 @@
 <resources>
-    <string name="app_name">AndroidWeatherProject</string>
+    <string name="app_name">DVTWeatherApp</string>
     <string name="error_message">"No internet connection found. &#xD; Check your connection"</string>
+    <string name="title_location_permission">Location Permission</string>
+    <string name="text_location_permission">Please provide location for accurate weather results</string>
+    <string name="ok">OK</string>
 </resources>
