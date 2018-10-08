@@ -6,4 +6,7 @@
     <color name="colorSunny">#47AB2F</color>
     <color name="colorCloudy">#54717a</color>
     <color name="colorRainy">#57575d</color>
+    <color name="colorCloudyStatusBar">#5e8398</color>
+    <color name="colorRainyStatusBar">#767675</color>
+    <color name="colorSunnyStatusBar">#ffd5a3</color>
 </resources>

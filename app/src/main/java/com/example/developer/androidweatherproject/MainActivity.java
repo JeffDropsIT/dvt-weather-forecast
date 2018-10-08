@@ -12,6 +12,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -21,6 +22,8 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -429,17 +432,21 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
             linHeadings.setBackgroundResource(R.color.colorSunny);
             ttvCurrentCoverHeader.setText("SUNNY");
             linWeekForecast.setBackgroundResource(R.color.colorSunny);
+
+            setStatusBar(R.color.colorSunnyStatusBar);
         }else if(main.contains(CLOUDS)){
             ImgCoverImage.setImageResource(R.drawable.forest_cloudy);
             linTemps.setBackgroundResource(R.color.colorCloudy);
             ttvCurrentCoverHeader.setText("CLOUDY");
             linHeadings.setBackgroundResource(R.color.colorCloudy);
             linWeekForecast.setBackgroundResource(R.color.colorCloudy);
+            setStatusBar(R.color.colorCloudyStatusBar);
         }else if(main.contains(RAIN)){
             ImgCoverImage.setImageResource(R.drawable.forest_rainy);
             linTemps.setBackgroundResource(R.color.colorRainy);
             linHeadings.setBackgroundResource(R.color.colorRainy);
             ttvCurrentCoverHeader.setText("RAINY");
+            setStatusBar(R.color.colorRainyStatusBar);
             linWeekForecast.setBackgroundResource(R.color.colorRainy);
         }
     }
@@ -521,6 +528,14 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
         ttvCurrent.setText(current+DEGREES_SYMBOL);
         ttvMax.setText(max+DEGREES_SYMBOL);
         ttvMin.setText(min+DEGREES_SYMBOL);
+    }
+
+    private void setStatusBar(int color){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(getResources().getColor(color)); // .setStatusBarColor(R.color.colorSunny);
+        }
     }
 
     private void displayWeekDays(){
