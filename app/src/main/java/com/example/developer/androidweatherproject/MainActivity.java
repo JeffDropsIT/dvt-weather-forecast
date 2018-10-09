@@ -73,8 +73,7 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
 
     private FusedLocationProviderClient mFusedLocationClient;
     private LinearLayout linTemps, linHeadings, linWeekForecast;
-
-
+    private Map< String, ArrayList<String>> getWeatherForecastList;
     public static StorageDB getStorageDBServer() {
         return storageDBServer;
     }
@@ -279,8 +278,10 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
                     }
                 });
     }
+
+
     private void setWeekForecastIcons(){
-        ArrayList<String> weekDaysIcons = storageDBServer.getWeatherForecast().get("main");
+        ArrayList<String> weekDaysIcons = getWeatherForecastList.get("main");
         Log.i("WSX", "setWeekForecastIcons  icons "+weekDaysIcons);
         if(!weekDaysIcons.isEmpty() && !iconsTextViewList.isEmpty()){
             if(weekDaysIcons.size() > 5){
@@ -315,7 +316,7 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
 
     private void setWeekForecastTemps(){
 
-        ArrayList<String> weekDaysTemp = storageDBServer.getWeatherForecast().get("temp");
+        ArrayList<String> weekDaysTemp = getWeatherForecastList.get("temp");
         Log.i("WSX", "setWeekForecastTemps  temps "+weekDaysTemp);
         if(!weekDaysTemp.isEmpty() && !tempsTextViewList.isEmpty()){
             if(weekDaysTemp.size() > 5){
@@ -401,6 +402,8 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
         setWeekForecastTemps();
     }
     private void updateUI(){
+
+        getWeatherForecastList = storageDBServer.getWeatherForecast();
         if(isWeatherLayoutPresent()){
             setLayoutViews();
         }else{
@@ -571,7 +574,7 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
     }
 
     private void displayWeekDays(){
-        ArrayList<String> weekDays = storageDBServer.getWeatherForecast().get("days");
+        ArrayList<String> weekDays = getWeatherForecastList.get("days");
         if(!weekDays.isEmpty() && !daysTextViewList.isEmpty()){
             //weekDays.remove(0);
             if(weekDays.size() > 5){

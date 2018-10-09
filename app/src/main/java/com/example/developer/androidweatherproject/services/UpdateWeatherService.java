@@ -36,6 +36,9 @@ public class UpdateWeatherService extends Service{
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
+
+
+        //use broadcast to handle update cache
         return null;
     }
 
