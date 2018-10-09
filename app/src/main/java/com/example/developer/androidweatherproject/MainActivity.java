@@ -543,11 +543,15 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
 
         String current = "0", min = "0", max = "0";
         int currentForecastHour = calculateForecastHours()[1];
+        int futureForecastHour = calculateForecastHours()[0];
         Map<String, Object> currentDayForecast;
         String currentForecastDate = getCurrentForecastDate(currentForecastHour);
-        currentDayForecast =  storageDBServer.getDayForecast(currentForecastDate);
-        String main = currentDayForecast.get(MAIN).toString();
+        String futureForecastDate = getNxtForecastDate(futureForecastHour);
+        currentDayForecast =  storageDBServer.getDayForecast(currentForecastDate, futureForecastDate);
+
+
         if(currentDayForecast != null){
+            String main = currentDayForecast.get(MAIN).toString();
             current = currentDayForecast.get(CURRENT_TEMPERATURE).toString();
             min = currentDayForecast.get(TEMP_MIN).toString();
             max = currentDayForecast.get(TEMP_MAX).toString();

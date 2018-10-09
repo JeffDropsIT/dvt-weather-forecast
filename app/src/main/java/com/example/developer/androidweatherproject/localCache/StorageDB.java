@@ -179,12 +179,29 @@ public class StorageDB {
 
 
 
-    public Map<String, Object> getDayForecast(String currentForecastTime){
+    public Map<String, Object> getDayForecast(String currentForecastDate, String futureForecastDate){
         Map<String, Map<String, Object> > forecastData = getLocalForecastData();
         Log.i("WSX", "confusion: forecastData "+forecastData);
-        Log.i("WSX", "confusion: currentForecastTime "+currentForecastTime);
-        Log.i("WSX", "confusion: "+ forecastData.get(currentForecastTime));
-        return forecastData.get(currentForecastTime);
+        Log.i("WSX", "confusion: futureForecastDate "+futureForecastDate);
+        Log.i("WSX", "confusion: currentForecastTime "+currentForecastDate);
+        try {
+
+            Map<String, Object> currentForecastData = forecastData.get(currentForecastDate);
+            if(currentForecastData == null){
+                currentForecastData =  forecastData.get(futureForecastDate);
+            }
+            Log.i("WSX", "confusion: currentForecastDate currentForecastData "+currentForecastData); //error found api inconsistent current times no there
+            Log.i("WSX", "confusion: currentForecastDate futureForecastDate "+ forecastData.get(futureForecastDate)); //error found api inconsistent current times no there
+            Log.i("WSX", "confusion: currentForecastDate currentForecastDate "+ forecastData.get(currentForecastDate)); //error found api inconsistent current times no there
+            return currentForecastData;
+
+        }catch (Exception e){
+            Log.i("WSX", "confusion: error "+ e);
+        }
+
+
+        return null;
+
 
     }
     public Map<String, Map<String, Object>> getLocalForecastData(){
@@ -242,10 +259,7 @@ public class StorageDB {
         return tableData;
     }
 
-    public void deleteAllOldData(){
-        createWeatherDataTable();
-        mDatabase.execSQL("DELETE FROM "+ WEATHER_FORECAST + " WHERE dt <  " );
-    }
+
 
     public String[] getColumnNames() {
         String[] colNames = {"dt", "dtTxt", "id", "temperature", "tempMin", "tempMax", "icon", "main"};
