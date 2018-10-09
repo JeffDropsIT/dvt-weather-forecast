@@ -22,7 +22,7 @@ public class UpdateWeatherService extends Service{
         if(MainActivity.getStorageDBServer() != null && isNetworkAvailable() ){
             if(!MainActivity.getString("lat").equals("0") && !MainActivity.getString("lon" ).equals("0")){
                 Log.i("WSX", "onSuccess: lat "+MainActivity.getString("lat")+" lon "+MainActivity.getString("lon"));
-               // new HttpRequestTask().execute(MainActivity.getString("lat"),MainActivity.getString("lon"));
+                new HttpRequestTask().execute(MainActivity.getString("lat"),MainActivity.getString("lon"));
             }
 
 

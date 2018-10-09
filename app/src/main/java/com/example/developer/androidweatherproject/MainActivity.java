@@ -82,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         getLastKnownLocation(new OnlocationListener() {
             @Override
@@ -95,10 +96,11 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
         preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         if (!isNetworkAvailable() && !getBoolean(IS_CACHED)) {
-            setContentView(R.layout.error_layout);
+            startErrorActivity();
+            //setContentView(R.layout.error_layout);
             putString("layout", "error_layout");
         } else {
-            setContentView(R.layout.activity_main);
+
             putString("layout", "activity_main");
         }
 
@@ -604,11 +606,14 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
 
     }
 
-    @Override
-    public void onTaskFailed() {
+    private void startErrorActivity(){
         Intent errorIntent = new Intent(this, SomethingWentWrongActivity.class);
         startActivity(errorIntent);
         finish();
+    }
+    @Override
+    public void onTaskFailed() {
+        startErrorActivity();
     }
 
     public interface OnlocationListener{
