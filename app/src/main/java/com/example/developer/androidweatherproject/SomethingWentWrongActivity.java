@@ -15,7 +15,7 @@ public class SomethingWentWrongActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.error_layout);
 
-
+        //onNetworkFound(); dumb F"n mistake
     }
 
 
@@ -32,7 +32,7 @@ public class SomethingWentWrongActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
 
-        onNetworkFound();
+        //onNetworkFound();
         super.onResume();
     }
 }
