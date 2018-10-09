@@ -4,4 +4,5 @@
     <string name="title_location_permission">Location Permission</string>
     <string name="text_location_permission">Please provide location for accurate weather results</string>
     <string name="ok">OK</string>
+    <string name="title_activity_something_went_wrong">SomethingWentWrongActivity</string>
 </resources>

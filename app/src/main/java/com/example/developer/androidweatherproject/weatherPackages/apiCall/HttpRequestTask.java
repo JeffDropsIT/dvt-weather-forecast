@@ -1,15 +1,10 @@
 package com.example.developer.androidweatherproject.weatherPackages.apiCall;
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
-import com.example.developer.androidweatherproject.MainActivity;
 import com.example.developer.androidweatherproject.localCache.StorageDB;
 import com.example.developer.androidweatherproject.weatherPackages.Main;
-import com.example.developer.androidweatherproject.weatherPackages.Weather;
 import com.example.developer.androidweatherproject.weatherPackages.WeatherObject;
 import com.example.developer.androidweatherproject.weatherPackages.WeekForecast;
 
@@ -17,14 +12,17 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
 import static com.example.developer.androidweatherproject.MainActivity.IS_CACHED;
 import static com.example.developer.androidweatherproject.MainActivity.getStorageDBServer;
+import static com.example.developer.androidweatherproject.MainActivity.isNetworkAvailable;
 import static com.example.developer.androidweatherproject.MainActivity.putBoolean;
-import static java.util.ResourceBundle.clearCache;
+import static  com.example.developer.androidweatherproject.localCache.StorageDB.clearCache;
 
 public class HttpRequestTask extends AsyncTask<String, Void, WeekForecast> {
     private final String BASE_PATH = "http://api.openweathermap.org/data/2.5/forecast", appid = "0ba4a7729669b8c072c20f5daa13b4a9";
@@ -44,52 +42,75 @@ public class HttpRequestTask extends AsyncTask<String, Void, WeekForecast> {
 
             final String url = BASE_PATH + "?lon=" + longitude + "&lat=" + latitude + "&appid=" + appid;
 
-            RestTemplate restTemplate = new RestTemplate();
-            restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
-            restTemplate.getMessageConverters().add(
-                    new MappingJackson2HttpMessageConverter());
-            WeekForecast weekForecast = restTemplate.getForObject(url, WeekForecast.class);
 
-            return weekForecast;
+
+            if (hasInternetAccess()){
+                RestTemplate restTemplate = new RestTemplate();
+                restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+                restTemplate.getMessageConverters().add(
+                        new MappingJackson2HttpMessageConverter());
+                WeekForecast weekForecast = restTemplate.getForObject(url, WeekForecast.class);
+                Log.i("WSX", "onStartCommand: found  internet access");
+                return weekForecast;
+            }else {
+                Log.i("WSX", "onStartCommand: found no internet access");
+                //add no internet connection layout
+                onTaskFailed();
+            }
+
         } catch (Exception e) {
             Log.e("WSX", e.getMessage(), e);
+            //add something went wrong layout
+            onTaskFailed();
         }
 
         return null;
     }
 
 
+    private void onTaskFailed(){
+        if(!isOnTaskListenerNull())
+            listener.onTaskFailed();
+    }
+
+
+    private boolean isOnTaskListenerNull(){
+        return listener == null;
+    }
 
 
     @Override
     protected void onPostExecute(WeekForecast weekForecast) {
-
+        onTaskFailed();
         Log.i("WSX", "onPostExecute: "+weekForecast);
 
         cacheWeatherData(weekForecast);
 
 
-        if(listener != null){
-            listener.onTaskCompleted();
-        }
+
 
     }
 
     public interface OnTaskCompleted{
         void onTaskCompleted();
+        void onTaskFailed();
     }
-    private void cacheWeatherData(WeekForecast weekForecast){
+
+    private void cacheWeatherData(final WeekForecast weekForecast){
 
 
-        Map<String, Object> weatherForecastMap = new HashMap<>();
+
 
         if(weekForecast == null){
             Log.i("WSX", "cacheWeatherData: no data form server");
-
+            onTaskFailed();
             return;
         }else {
             clearCache();
+            Log.i("WSX", "FLOW cacheWeatherData: clearCache");
         }
+        Log.i("WSX", "FLOW cacheWeatherData: beforeLoop");
+        Map<String, Object> weatherForecastMap = new HashMap<>();
         for(int i = 0; i < weekForecast.getList().size(); i++){
             Main main = weekForecast.getList().get(i).getMain();
             WeatherObject weatherObject = weekForecast.getList().get(i);
@@ -126,14 +147,47 @@ public class HttpRequestTask extends AsyncTask<String, Void, WeekForecast> {
 
             getStorageDBServer().addWeatherEvents(StorageDB.toContentValues(weatherForecastMap));
 
+            Log.i("WSX", "FLOW cacheWeatherData: onLoop");
         }
 
 
         putBoolean(IS_CACHED,true);
+        if(!isOnTaskListenerNull()){
+            Log.i("WSX", "FLOW cacheWeatherData: onTaskCompleted");
+            listener.onTaskCompleted();
+        }
 
 
     }
 
 
+
+
+
+    private boolean hasInternetAccess(){
+        boolean connection = false;
+        try {
+            if (isNetworkAvailable()) {
+                HttpURLConnection urlc = (HttpURLConnection)
+                        (new URL("https://www.google.com/")
+                                .openConnection());
+                urlc.setConnectTimeout(10000);
+                urlc.connect();
+                connection = (urlc.getResponseCode() == 200);
+                Log.i("WSX", "finished checking internet connection rlc.getResponseCode() "+ urlc.getResponseCode());
+                return connection;
+            } else {
+
+                Log.d("WSX", "No network available!");
+                return connection;
+            }
+
+
+        } catch (IOException e) {
+            Log.e("WSX", "Error checking internet connection", e);
+            return connection;
+        }
+
+    }
 
 }

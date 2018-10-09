@@ -1,19 +1,14 @@
 package com.example.developer.androidweatherproject.localCache;
 
 import android.content.ContentValues;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.preference.PreferenceManager;
-import android.text.TextUtils;
 import android.util.Log;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -94,8 +89,11 @@ public class StorageDB {
 
     }
 
-    private static void clearCache(){
+    public static void clearCache(){
+        createWeatherDataTable();
         mDatabase.execSQL("DELETE FROM "+ WEATHER_FORECAST);
+
+
     }
 
     private ArrayList<String> sortDays(ArrayList<String> datestring){
@@ -250,4 +248,5 @@ public class StorageDB {
         String[] colNames = {"dt", "dtTxt", "id", "temperature", "tempMin", "tempMax", "icon", "main"};
         return colNames;
     }
+
 }

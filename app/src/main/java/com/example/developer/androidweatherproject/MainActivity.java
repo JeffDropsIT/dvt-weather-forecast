@@ -19,7 +19,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -97,8 +96,10 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
 
         if (!isNetworkAvailable() && !getBoolean(IS_CACHED)) {
             setContentView(R.layout.error_layout);
+            putString("layout", "error_layout");
         } else {
             setContentView(R.layout.activity_main);
+            putString("layout", "activity_main");
         }
 
 
@@ -371,13 +372,42 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
         }
     }
 
+    private boolean isWeatherLayoutPresent(){
+        return  getString("layout").contains("activity_main");
+    }
 
-    private void updateUI(){
+    private void restartActivity(){
+        if(Build.VERSION.SDK_INT > 11){
+            recreate();
+
+        }else {
+
+            Intent intent = getIntent();
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+            finish();
+            overridePendingTransition(0, 0);
+            startActivity(intent);
+            overridePendingTransition(0,0);
+        }
+    }
+
+    private void setLayoutViews(){
         updateWeatherInfo();
         displayWeekDays();
         displayWeatherInfo();
         setWeekForecastIcons();
         setWeekForecastTemps();
+    }
+    private void updateUI(){
+        if(isWeatherLayoutPresent()){
+            setLayoutViews();
+        }else{
+            if(isNetworkAvailable() && getBoolean(IS_CACHED)){
+                restartActivity();
+            }
+
+        }
+
     }
     private int getCurrentHour(){
 
@@ -572,6 +602,13 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
 
         updateUI();
 
+    }
+
+    @Override
+    public void onTaskFailed() {
+        Intent errorIntent = new Intent(this, SomethingWentWrongActivity.class);
+        startActivity(errorIntent);
+        finish();
     }
 
     public interface OnlocationListener{
