@@ -81,10 +81,23 @@ public class HttpRequestTask extends AsyncTask<String, Void, WeekForecast> {
 
     @Override
     protected void onPostExecute(WeekForecast weekForecast) {
-        onTaskFailed();
+        //onTaskFailed();
         Log.i("WSX", "onPostExecute: "+weekForecast);
 
-        cacheWeatherData(weekForecast);
+        cacheWeatherData(weekForecast, new OnTaskCompleted() {
+            @Override
+            public void onTaskCompleted() {
+                if(!isOnTaskListenerNull()){
+                    Log.i("WSX", "FLOW cacheWeatherData: onTaskCompleted");
+                    listener.onTaskCompleted();
+                }
+            }
+
+            @Override
+            public void onTaskFailed() {
+
+            }
+        });
 
 
 
@@ -96,14 +109,14 @@ public class HttpRequestTask extends AsyncTask<String, Void, WeekForecast> {
         void onTaskFailed();
     }
 
-    private void cacheWeatherData(final WeekForecast weekForecast){
+    private void cacheWeatherData(final WeekForecast weekForecast, OnTaskCompleted onTaskCompleted){
 
 
 
 
         if(weekForecast == null){
             Log.i("WSX", "cacheWeatherData: no data form server");
-            onTaskFailed();
+            onTaskCompleted.onTaskFailed();
             return;
         }else {
             clearCache();
@@ -152,11 +165,8 @@ public class HttpRequestTask extends AsyncTask<String, Void, WeekForecast> {
 
 
         putBoolean(IS_CACHED,true);
-        if(!isOnTaskListenerNull()){
-            Log.i("WSX", "FLOW cacheWeatherData: onTaskCompleted");
-            listener.onTaskCompleted();
-        }
 
+        onTaskCompleted.onTaskCompleted();
 
     }
 

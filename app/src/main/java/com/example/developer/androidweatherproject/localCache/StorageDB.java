@@ -242,7 +242,10 @@ public class StorageDB {
         return tableData;
     }
 
-
+    public void deleteAllOldData(){
+        createWeatherDataTable();
+        mDatabase.execSQL("DELETE FROM "+ WEATHER_FORECAST + " WHERE dt <  " );
+    }
 
     public String[] getColumnNames() {
         String[] colNames = {"dt", "dtTxt", "id", "temperature", "tempMin", "tempMax", "icon", "main"};
