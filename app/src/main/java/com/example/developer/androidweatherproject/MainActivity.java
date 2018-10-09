@@ -539,12 +539,10 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
 
 
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+    private void fetchData(){
         if(isNetworkAvailable()){
             if(!MainActivity.getString("lat").equals("0") && !MainActivity.getString("lon" ).equals("0")){
-                Log.i("WSX", "onResume: lat "+getString("lat")+" lon "+getString("lon"));
+                Log.i("WSX", "fetchData: lat "+getString("lat")+" lon "+getString("lon"));
                 new HttpRequestTask(this).execute(getString("lat"),getString("lon"));
             }else {
                 getLastKnownLocation(new OnlocationListener() {
@@ -554,13 +552,19 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
                     }
                 });
             }
-            Log.i("WSX", "onResume: lat "+getString("lat")+" lon "+getString("lon"));
-            // new HttpRequestTask(this).execute("-29.844776","31.014339");
-            Log.i("WSX", "onResume: internet connection ");
+            Log.i("WSX", "fetchData: lat "+getString("lat")+" lon "+getString("lon"));
+            Log.i("WSX", "fetchData: internet connection ");
         }else{
-            Log.i("WSX", "onResume: no internet connection ");
+            Log.i("WSX", "fetchData: no internet connection ");
         }
+    }
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        fetchData();
         if(getBoolean(IS_CACHED)){
             updateUI();
         }
@@ -580,18 +584,7 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
                     Log.i("WSX", "onRequestPermissionsResult: Granted");
-                    getLastKnownLocation(new OnlocationListener() {
-                        @Override
-                        public void onLocationComplete() {
-                            Log.i("WSX", "onRequestPermissionsResult: Granted");
-                            if (isNetworkAvailable()) {
-                                new HttpRequestTask(MainActivity.this).execute(getString("lat"),getString("lon") );
-                                Log.i("WSX", "onCreate: internet connection ");
-                            } else {
-                                Log.i("WSX", "onCreate: no internet connection ");
-                            }
-                        }
-                    });
+                    fetchData();
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
