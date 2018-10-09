@@ -50,6 +50,7 @@ public class HttpRequestTask extends AsyncTask<String, Void, WeekForecast> {
                 restTemplate.getMessageConverters().add(
                         new MappingJackson2HttpMessageConverter());
                 WeekForecast weekForecast = restTemplate.getForObject(url, WeekForecast.class);
+                clearCache();
                 Log.i("WSX", "onStartCommand: found  internet access");
                 return weekForecast;
             }else {
@@ -74,6 +75,7 @@ public class HttpRequestTask extends AsyncTask<String, Void, WeekForecast> {
     }
 
 
+
     private boolean isOnTaskListenerNull(){
         return listener == null;
     }
@@ -84,20 +86,7 @@ public class HttpRequestTask extends AsyncTask<String, Void, WeekForecast> {
         //onTaskFailed();
         Log.i("WSX", "onPostExecute: "+weekForecast);
 
-        cacheWeatherData(weekForecast, new OnTaskCompleted() {
-            @Override
-            public void onTaskCompleted() {
-                if(!isOnTaskListenerNull()){
-                    Log.i("WSX", "FLOW cacheWeatherData: onTaskCompleted");
-                    listener.onTaskCompleted();
-                }
-            }
-
-            @Override
-            public void onTaskFailed() {
-
-            }
-        });
+        cacheWeatherData(weekForecast, listener);
 
 
 
@@ -116,7 +105,8 @@ public class HttpRequestTask extends AsyncTask<String, Void, WeekForecast> {
 
         if(weekForecast == null){
             Log.i("WSX", "cacheWeatherData: no data form server");
-            onTaskCompleted.onTaskFailed();
+            if(onTaskCompleted != null)
+                onTaskCompleted.onTaskFailed();
             return;
         }else {
             clearCache();
@@ -166,7 +156,10 @@ public class HttpRequestTask extends AsyncTask<String, Void, WeekForecast> {
 
         putBoolean(IS_CACHED,true);
 
-        onTaskCompleted.onTaskCompleted();
+        if(!isOnTaskListenerNull()) {
+            Log.i("WSX", "FLOW cacheWeatherData: onTaskCompleted");
+            listener.onTaskCompleted();
+        }
 
     }
 
