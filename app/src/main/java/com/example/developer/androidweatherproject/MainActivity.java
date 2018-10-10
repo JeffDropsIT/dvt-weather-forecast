@@ -16,6 +16,7 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -28,6 +29,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.example.developer.androidweatherproject.localCache.StorageDB;
@@ -74,7 +76,8 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
     ArrayList<TextView> tempsTextViewList;
 
     private FusedLocationProviderClient mFusedLocationClient;
-    private LinearLayout linTemps, linHeadings, linWeekForecast;
+    private LinearLayout linTemps, linHeadings;
+    private ScrollView srvWeekForecast;
     private Map< String, ArrayList<String>> getWeatherForecastList;
     public static StorageDB getStorageDBServer() {
         return storageDBServer;
@@ -107,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
 
         linTemps = findViewById(R.id.lin_header_temperature);
         linHeadings = findViewById(R.id.lin_header_headings);
-        linWeekForecast = findViewById(R.id.lin_week_forecast);
+        srvWeekForecast = findViewById(R.id.srv_week_forecast);
         ttvCurrent = findViewById(R.id.ttv_current);
         ttvMin = findViewById(R.id.ttv_min);
         ttvMax = findViewById(R.id.ttv_max);
@@ -157,6 +160,7 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
         tempsTextViewList.add(ttvTemp5);
 
         setToolBar();
+        refreshLayout();
 
 
     }
@@ -396,7 +400,7 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
             linTemps.setBackgroundResource(R.color.colorSunny);
             linHeadings.setBackgroundResource(R.color.colorSunny);
             ttvCurrentCoverHeader.setText("SUNNY");
-            linWeekForecast.setBackgroundResource(R.color.colorSunny);
+            srvWeekForecast.setBackgroundResource(R.color.colorSunny);
 
             setStatusBar(R.color.colorSunnyStatusBar);
         }else if(main.contains(CLOUDS)){
@@ -404,7 +408,7 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
             linTemps.setBackgroundResource(R.color.colorCloudy);
             ttvCurrentCoverHeader.setText("CLOUDY");
             linHeadings.setBackgroundResource(R.color.colorCloudy);
-            linWeekForecast.setBackgroundResource(R.color.colorCloudy);
+            srvWeekForecast.setBackgroundResource(R.color.colorCloudy);
             setStatusBar(R.color.colorCloudyStatusBar);
         }else if(main.contains(RAIN)){
             ImgCoverImage.setImageResource(R.drawable.forest_rainy);
@@ -412,7 +416,7 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
             linHeadings.setBackgroundResource(R.color.colorRainy);
             ttvCurrentCoverHeader.setText("RAINY");
             setStatusBar(R.color.colorRainyStatusBar);
-            linWeekForecast.setBackgroundResource(R.color.colorRainy);
+            srvWeekForecast.setBackgroundResource(R.color.colorRainy);
         }
     }
 
@@ -488,6 +492,17 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
         }
     }
 
+    private void refreshLayout(){
+        final SwipeRefreshLayout pullToRefresh = findViewById(R.id.srl_layout);
+        pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                fetchData();
+                pullToRefresh.setRefreshing(false);
+            }
+        });
+
+    }
     private void displayWeekDays(){
         ArrayList<String> weekDays = getWeatherForecastList.get("days");
         if(!weekDays.isEmpty() && !daysTextViewList.isEmpty()){
