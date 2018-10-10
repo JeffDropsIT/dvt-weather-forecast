@@ -9,4 +9,9 @@
     <color name="colorCloudyStatusBar">#5e8398</color>
     <color name="colorRainyStatusBar">#767675</color>
     <color name="colorSunnyStatusBar">#ffd5a3</color>
+    <color name="colorLightGrey">#7d7d7d</color>
+
+    <color name="colorLightWhite">#fafafa</color>
+    <color name="colorDarkGrey">#e3e3e3</color>
 </resources>
+
