@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:elevation="4dp" />
+        <ImageView
+            android:id="@+id/img_forecast"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/forest_sunny"
+            android:scaleType="centerCrop"/>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:layout_centerVertical="true"
+            android:layout_below="@+id/toolbar"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/ttv_current_temp_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="25"
+                android:textAllCaps="true"
+                android:textColor="#fafafa"
+                android:textSize="50dp"
+                android:textStyle="normal" />
+
+            <TextView
+                android:id="@+id/ttv_current_temp_cover"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sunny"
+                android:textAllCaps="true"
+
+                android:textColor="#fafafa"
+                android:textSize="22dp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
+
+    <LinearLayout
+        android:id="@+id/lin_header_temperature"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorSunny"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/ttv_min"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#fafafa"
+            android:textSize="15sp"
+            android:layout_weight=".333"
+            android:gravity="center_vertical"
+            android:text="0\nMin"/>
+
+        <TextView
+            android:id="@+id/ttv_current"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textColor="#fafafa"
+            android:textSize="15sp"
+            android:layout_weight=".333"
+            android:text="0\nCurrent"/>
+        <TextView
+            android:id="@+id/ttv_max"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|right"
+            android:textColor="#fafafa"
+            android:textSize="15sp"
+            android:layout_weight=".333"
+            android:text="0\nMax"/>
+
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorSunny"
+        android:padding="10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/ttv_day1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:textSize="14sp"
+                    android:layout_weight=".333"
+                    android:gravity="center_vertical"
+                    android:textColor="#fafafa"
+                    android:text="Monday"/>
+
+                <ImageView
+                    android:id="@+id/ttv_icon1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".333"
+                    android:gravity="center"
+                    android:src="@drawable/clear2x"/>
+
+                <TextView
+                    android:id="@+id/ttv_temp1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:layout_weight=".333"
+                    android:padding="5dp"
+                    android:textSize="14sp"
+                    android:textColor="#fafafa"
+                    android:text="0"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/ttv_day2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:textSize="14sp"
+                    android:layout_weight=".333"
+                    android:gravity="center_vertical"
+                    android:textColor="#fafafa"
+                    android:text="Tuesday"/>
+
+                <ImageView
+                    android:id="@+id/ttv_icon2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".333"
+                    android:gravity="center"
+                    android:src="@drawable/clear2x"/>
+
+                <TextView
+                    android:id="@+id/ttv_temp2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:layout_weight=".333"
+                    android:padding="5dp"
+                    android:textSize="14sp"
+                    android:textColor="#fafafa"
+                    android:text="0"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/ttv_day3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:textSize="14sp"
+                    android:layout_weight=".333"
+                    android:gravity="center_vertical"
+                    android:textColor="#fafafa"
+                    android:text="Wednesday"/>
+
+                <ImageView
+                    android:id="@+id/ttv_icon3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".333"
+                    android:gravity="center"
+                    android:src="@drawable/clear2x"/>
+
+                <TextView
+                    android:id="@+id/ttv_temp3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:layout_weight=".333"
+                    android:padding="5dp"
+                    android:textSize="14sp"
+                    android:textColor="#fafafa"
+                    android:text="0"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/ttv_day4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:textSize="14sp"
+                    android:layout_weight=".333"
+                    android:gravity="center_vertical"
+                    android:textColor="#fafafa"
+                    android:text="Thursday"/>
+
+                <ImageView
+                    android:id="@+id/ttv_icon4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".333"
+                    android:gravity="center"
+                    android:src="@drawable/clear2x"/>
+
+                <TextView
+                    android:id="@+id/ttv_temp4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:layout_weight=".333"
+                    android:padding="5dp"
+                    android:textSize="14sp"
+                    android:textColor="#fafafa"
+                    android:text="0"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/ttv_day5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:textSize="14sp"
+                    android:layout_weight=".333"
+                    android:gravity="center_vertical"
+                    android:textColor="#fafafa"
+                    android:text="Friday"/>
+
+                <ImageView
+                    android:id="@+id/ttv_icon5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".333"
+                    android:gravity="center"
+                    android:src="@drawable/clear2x"/>
+
+                <TextView
+                    android:id="@+id/ttv_temp5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:layout_weight=".333"
+                    android:padding="5dp"
+                    android:textSize="14sp"
+                    android:textColor="#fafafa"
+                    android:text="0"/>
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

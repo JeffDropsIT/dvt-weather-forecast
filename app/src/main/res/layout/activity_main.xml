@@ -21,13 +21,13 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:elevation="4dp"
-            app:theme="@style/CustomToolBarTheme"/>
+            android:elevation="4dp" />
         <ImageView
             android:id="@+id/img_forecast"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:src="@drawable/forest_sunny" />
+            android:src="@drawable/forest_sunny"
+            android:scaleType="centerCrop"/>
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
