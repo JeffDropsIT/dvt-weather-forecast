@@ -488,6 +488,8 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
 
             setAppWeatherTheme(main);
 
+        }else {
+            startErrorActivity();
         }
 
         Log.i("WSX", "updateWeatherInfo: currentForecast hour "+currentForecastHour);
