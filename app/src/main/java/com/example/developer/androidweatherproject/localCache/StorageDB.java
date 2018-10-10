@@ -81,7 +81,6 @@ public class StorageDB {
         }
         if(fullDateFormat != null){
             dayOfWeek = dayFormat.format(fullDateFormat);
-            Log.i("DDD", "getDayOfWeek: "+dayOfWeek);
             return dayOfWeek;
         }else {
             return "null";
@@ -97,7 +96,6 @@ public class StorageDB {
     }
 
     private ArrayList<String> sortDays(ArrayList<String> datestring){
-        Log.i("WSX", "sort  unsortedDays: "+datestring);
         Collections.sort(datestring, new Comparator<String>() {
             DateFormat f = new SimpleDateFormat(YYYY_MM_DD_HH_MM_SS);
             @Override
@@ -110,17 +108,15 @@ public class StorageDB {
             }
         });
 
-        Log.i("WSX", "sort sortDays: "+datestring);
         return datestring;
     }
 
-    //fuction too coupled
+    //returns the week forecast data
     public  Map< String, ArrayList<String>> getWeatherForecast(){
         ArrayList<String> daysOfWeek = new ArrayList<>();
         ArrayList<String> dtTxtList = new ArrayList<>();
         ArrayList<String> mainList = new ArrayList<>();
         ArrayList<String> tempList = new ArrayList<>();
-        ArrayList<String> debugdays = new ArrayList<>();
         Map< String, ArrayList<String>> weatherList = new HashMap<>();
 
         Set dtTxtSet = getLocalForecastData().keySet();
@@ -129,50 +125,40 @@ public class StorageDB {
         dtTxtList = sortDays(dtTxtList); //sort and reassign
 
 
-        Log.i("WSX", "WEEKLIST: keys "+dtTxtList);
-
         for(int i = 0;  i < dtTxtList.size(); i++){
             String dtTxt = dtTxtList.get(i);
 
-            String day =  getDayOfWeek(dtTxt);
+            String day =  getDayOfWeek(dtTxt); //return the day format of each date
+
+            //only add day to list if it has not been added
             if(!daysOfWeek.contains(day)){
-                String dtMidday = dtTxt.split(" ")[0]+" "+MIDDAY;
+                String dtMidday = dtTxt.split(" ")[0]+" "+MIDDAY; //midday date for each day forecast
 
 
+                //if the day has a midday return the midday forecast
                 if(dtTxtList.contains(dtMidday)){
-                    Log.i("WSX", "MIDDAY dtMidday: temp "+dtMidday);
-                    String main = getLocalForecastData().get(dtMidday).get("main").toString();
-                    String temp = getLocalForecastData().get(dtMidday).get("temperature").toString();
+                    String main = getLocalForecastData().get(dtMidday).get("main").toString();  //main i.e Cloudy, Rainy or Sunny
+                    String temp = getLocalForecastData().get(dtMidday).get("temperature").toString(); //current temperature for each midday on week
                     daysOfWeek.add(day);
                     tempList.add(temp);
                     mainList.add(main);
-                    debugdays.add(dtMidday);
-                    Log.i("WSX", "WEEKLIST dtMidday: temp "+temp);
-                    Log.i("WSX", "WEEKLIST dtMidday: main "+main);
-                    Log.i("WSX", "WEEKLIST dtMidday: "+day);
                 }else {
-                    Log.i("WSX", "MIDDAY: temp "+dtTxt);
+
+                    //if no midday take whatever date and get its forecast
                     String main = getLocalForecastData().get(dtTxt).get("main").toString();
                     String temp = getLocalForecastData().get(dtTxt).get("temperature").toString();
                     daysOfWeek.add(day);
                     tempList.add(temp);
                     mainList.add(main);
-                    debugdays.add(dtTxt);
-                    Log.i("WSX", "WEEKLIST: temp "+temp);
-                    Log.i("WSX", "WEEKLIST: main "+main);
-                    Log.i("WSX", "WEEKLIST: "+day);
                 }
 
             }
 
         }
 
-        Log.i("WSX", "WEEKLIST1: debugdays "+debugdays);
-        Log.i("WSX", "WEEKLIST1: temp "+tempList);
-        Log.i("WSX", "WEEKLIST1: main "+mainList);
-        weatherList.put("days",daysOfWeek);
-        weatherList.put("main",mainList);
-        weatherList.put("temp",tempList);
+        weatherList.put("days",daysOfWeek); //list of the five days to forecast for i.e see api
+        weatherList.put("main",mainList); //main i.e Cloudy, Rainy or Sunny for each day forecast
+        weatherList.put("temp",tempList); //temperature list for the five days  i.e see api
         return  weatherList;
     }
 
@@ -180,19 +166,17 @@ public class StorageDB {
 
 
     public Map<String, Object> getDayForecast(String currentForecastDate, String futureForecastDate){
-        Map<String, Map<String, Object> > forecastData = getLocalForecastData();
-        Log.i("WSX", "confusion: forecastData "+forecastData);
-        Log.i("WSX", "confusion: futureForecastDate "+futureForecastDate);
-        Log.i("WSX", "confusion: currentForecastTime "+currentForecastDate);
+        Map<String, Map<String, Object> > forecastData = getLocalForecastData(); //get data from the cache
         try {
 
             Map<String, Object> currentForecastData = forecastData.get(currentForecastDate);
+
+            //if the forecast for the current hour is not there get one for the next hour
             if(currentForecastData == null){
                 currentForecastData =  forecastData.get(futureForecastDate);
             }
-            Log.i("WSX", "confusion: currentForecastDate currentForecastData "+currentForecastData); //error found api inconsistent current times no there
-            Log.i("WSX", "confusion: currentForecastDate futureForecastDate "+ forecastData.get(futureForecastDate)); //error found api inconsistent current times no there
-            Log.i("WSX", "confusion: currentForecastDate currentForecastDate "+ forecastData.get(currentForecastDate)); //error found api inconsistent current times no there
+            //error found api inconsistent current times no there
+
             return currentForecastData;
 
         }catch (Exception e){
@@ -206,18 +190,20 @@ public class StorageDB {
     }
     public Map<String, Map<String, Object>> getLocalForecastData(){
 
+        //query local cache database
 
-        String[] tableCols = getColumnNames();
+        String[] tableCols = getColumnNames(); //get all columns in the database
         Cursor forecastCursor;
-        forecastCursor = getCacheWeatherData();
-        Log.i("WSX", "count: "+forecastCursor.getCount());
+        forecastCursor = getCacheWeatherData(); //return all data on table
         Map<String, Map<String, Object>> tableData = new HashMap<>();
+
+        //put the data in map
         if(forecastCursor.moveToNext()){
             do{
                 Map<String, Object> data = new HashMap<>();
                 for(int i = 0 ; i < tableCols.length ; i++){
                     String colContent = forecastCursor.getString(forecastCursor.getColumnIndex(tableCols[i]));
-                    Log.i("WSX", "getLocalForecastData: colContent "+colContent);
+
                     switch (tableCols[i]){
                         case "dt":
                             data.put("dt", colContent);
@@ -249,13 +235,12 @@ public class StorageDB {
 
 
                 }
-
+                //key is the date of the forecast since unique
                 tableData.put(data.get("dtTxt").toString(), data);
-                Log.i("WSX", "getLocalForecastData: "+data.keySet() +"|"+data.size() +" | "+data+ "| "+data.get("dtTxt").toString());
+
             }while (forecastCursor.moveToNext());
         }
 
-        Log.i("WSX", "getLocalForecastData: table data "+"|"+tableData);
         return tableData;
     }
 
