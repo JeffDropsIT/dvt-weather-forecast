@@ -28,6 +28,7 @@
             android:exported="true"></service>
 
         <activity
+            android:launchMode="singleTask"
             android:name=".SomethingWentWrongActivity"
             android:label="@string/title_activity_something_went_wrong"
             android:theme="@style/AppTheme"></activity>

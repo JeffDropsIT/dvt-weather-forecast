@@ -38,30 +38,34 @@ public class HttpRequestTask extends AsyncTask<String, Void, WeekForecast> {
     @Override
     protected WeekForecast doInBackground(String... params) {
         try {
-            String longitude = params[1], latitude = params[0];
+            String longitude = params[1], latitude = params[0]; //get coordinates from ui thread
 
+
+
+
+            //api endpoint
             final String url = BASE_PATH + "?lon=" + longitude + "&lat=" + latitude + "&appid=" + appid;
 
 
-
+            //if there is internet access collect data from api
             if (hasInternetAccess()){
+
                 RestTemplate restTemplate = new RestTemplate();
                 restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
                 restTemplate.getMessageConverters().add(
                         new MappingJackson2HttpMessageConverter());
                 WeekForecast weekForecast = restTemplate.getForObject(url, WeekForecast.class);
-                clearCache();
-                Log.i("WSX", "onStartCommand: found  internet access");
+                if(weekForecast != null)
+                    clearCache();
                 return weekForecast;
             }else {
-                Log.i("WSX", "onStartCommand: found no internet access");
-                //add no internet connection layout
+                //add no internet connection activity
                 onTaskFailed();
             }
 
         } catch (Exception e) {
             Log.e("WSX", e.getMessage(), e);
-            //add something went wrong layout
+            //add something went wrong activity
             onTaskFailed();
         }
 
@@ -83,9 +87,8 @@ public class HttpRequestTask extends AsyncTask<String, Void, WeekForecast> {
 
     @Override
     protected void onPostExecute(WeekForecast weekForecast) {
-        //onTaskFailed();
-        Log.i("WSX", "onPostExecute: "+weekForecast);
 
+        //update cache
         cacheWeatherData(weekForecast, listener);
 
 
@@ -102,17 +105,14 @@ public class HttpRequestTask extends AsyncTask<String, Void, WeekForecast> {
 
 
 
-
+        //no data was returned throw error - something went wrong
         if(weekForecast == null){
-            Log.i("WSX", "cacheWeatherData: no data form server");
             if(onTaskCompleted != null)
                 onTaskCompleted.onTaskFailed();
             return;
-        }else {
-            clearCache();
-            Log.i("WSX", "FLOW cacheWeatherData: clearCache");
         }
-        Log.i("WSX", "FLOW cacheWeatherData: beforeLoop");
+
+        //update cache data with new data
         Map<String, Object> weatherForecastMap = new HashMap<>();
         for(int i = 0; i < weekForecast.getList().size(); i++){
             Main main = weekForecast.getList().get(i).getMain();
@@ -138,31 +138,18 @@ public class HttpRequestTask extends AsyncTask<String, Void, WeekForecast> {
             weatherForecastMap.put("tempMin", minStr);
             weatherForecastMap.put("tempMax", maxStr);
 
-
-            Log.i("WSX", "cacheWeatherData: dt: "+ weatherForecastMap.get("dt"));
-            Log.i("WSX", "cacheWeatherData: id: "+ weatherForecastMap.get("id"));
-            Log.i("WSX", "cacheWeatherData: main: "+ weatherForecastMap.get("main"));
-            Log.i("WSX", "cacheWeatherData: icon: "+ weatherForecastMap.get("icon"));
-            Log.i("WSX", "cacheWeatherData: dtTxt: "+ weatherForecastMap.get("dtTxt"));
-            Log.i("WSX", "cacheWeatherData: temperature: "+ weatherForecastMap.get("temperature"));
-            Log.i("WSX", "cacheWeatherData: tmpMin: "+ weatherForecastMap.get("tempMin"));
-            Log.i("WSX", "cacheWeatherData: tmpMax: "+ weatherForecastMap.get("tempMax"));
-
             getStorageDBServer().addWeatherEvents(StorageDB.toContentValues(weatherForecastMap));
 
-            Log.i("WSX", "FLOW cacheWeatherData: onLoop");
         }
 
 
         putBoolean(IS_CACHED,true);
 
         if(!isOnTaskListenerNull()) {
-            Log.i("WSX", "FLOW cacheWeatherData: onTaskCompleted");
             listener.onTaskCompleted();
         }
 
     }
-
 
 
 
@@ -172,16 +159,14 @@ public class HttpRequestTask extends AsyncTask<String, Void, WeekForecast> {
         try {
             if (isNetworkAvailable()) {
                 HttpURLConnection urlc = (HttpURLConnection)
-                        (new URL("https://www.google.com/")
+                        (new URL("https://www.google.com/") //ping google
                                 .openConnection());
                 urlc.setConnectTimeout(10000);
                 urlc.connect();
                 connection = (urlc.getResponseCode() == 200);
-                Log.i("WSX", "finished checking internet connection rlc.getResponseCode() "+ urlc.getResponseCode());
                 return connection;
             } else {
 
-                Log.d("WSX", "No network available!");
                 return connection;
             }
 

@@ -17,18 +17,15 @@ public class UpdateWeatherService extends Service{
     public int onStartCommand(Intent intent, int flags, int startId) {
 
 
-
-        Log.i("WSX", "onStartCommand: get data from cache or network");
+        //if cache exist and network is available refresh cache data
         if(MainActivity.getStorageDBServer() != null && isNetworkAvailable() ){
             if(!MainActivity.getString("lat").equals("0") && !MainActivity.getString("lon" ).equals("0")){
-                Log.i("WSX", "onSuccess: lat "+MainActivity.getString("lat")+" lon "+MainActivity.getString("lon"));
+                //refresh cache data
                 new HttpRequestTask().execute(MainActivity.getString("lat"),MainActivity.getString("lon"));
             }
 
 
 
-        }else{
-            Log.i("WSX", "onStartCommand: no internet connection or database not initialized");
         }
         return super.onStartCommand(intent, flags, startId);
     }
@@ -37,8 +34,6 @@ public class UpdateWeatherService extends Service{
     @Override
     public IBinder onBind(Intent intent) {
 
-
-        //use broadcast to handle update cache
         return null;
     }
 
