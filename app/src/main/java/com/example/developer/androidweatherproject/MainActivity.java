@@ -366,7 +366,7 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
         return timeTillUpdate;
     }
 
-
+    //calculate the current forecast hour i.e 18:00 and the future forecast hour i.e 21:00
     private int[] calculateForecastHours(){
         int currentHour  = getCurrentHour();
         int remainderNxtHour = currentHour % 3;
@@ -385,9 +385,10 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
             currentHour += 1;
             currentForecastHour -= 2;
         }
-        int futureForecastHour = currentHour;
+        int futureForecastHour = currentHour; //the next time 3 hourly forecast hour
         return new int[]{ futureForecastHour , currentForecastHour};
     }
+
 
     private void setAppWeatherTheme(String main){
         if(main.contains(CLEAR)){
