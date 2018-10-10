@@ -20,7 +20,7 @@ public class SomethingWentWrongActivity extends AppCompatActivity {
 
 
     private void onNetworkFound(){
-        if(MainActivity.isNetworkAvailable()){
+        if(MainActivity.isNetworkAvailable() ){
             startMainActivity();
         }
     }
@@ -32,7 +32,7 @@ public class SomethingWentWrongActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
 
-        onNetworkFound();
+        //onNetworkFound();
         super.onResume();
     }
 }

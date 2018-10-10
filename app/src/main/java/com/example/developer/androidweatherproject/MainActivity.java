@@ -16,9 +16,11 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -154,9 +156,19 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
         tempsTextViewList.add(ttvTemp4);
         tempsTextViewList.add(ttvTemp5);
 
+        setToolBar();
 
 
+    }
 
+    private void setToolBar() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        ActionBar actionbar = getSupportActionBar();
+        actionbar.setDisplayShowTitleEnabled(false);
+        actionbar.setDisplayHomeAsUpEnabled(true);
+        actionbar.setHomeButtonEnabled(true);
+        actionbar.setHomeAsUpIndicator(R.drawable.ic_menu);
 
     }
 
@@ -542,13 +554,15 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
     private void fetchData(){
         if(isNetworkAvailable()){
             if(!MainActivity.getString("lat").equals("0") && !MainActivity.getString("lon" ).equals("0")){
-                Log.i("WSX", "fetchData: lat "+getString("lat")+" lon "+getString("lon"));
+                Log.i("WSX", "fetchData one: lat "+getString("lat")+" lon "+getString("lon"));
                 new HttpRequestTask(this).execute(getString("lat"),getString("lon"));
             }else {
+                Log.i("WSX", "fetchData zero: lat "+getString("lat")+" lon "+getString("lon"));
                 getLastKnownLocation(new OnlocationListener() {
                     @Override
                     public void onLocationComplete() {
-
+                        new HttpRequestTask(MainActivity.this).execute(getString("lat"),getString("lon"));
+                        Log.i("WSX", "fetchData done: lat "+getString("lat")+" lon "+getString("lon"));
                     }
                 });
             }

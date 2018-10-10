@@ -45,12 +45,14 @@ public class HttpRequestTask extends AsyncTask<String, Void, WeekForecast> {
 
 
             if (hasInternetAccess()){
+
                 RestTemplate restTemplate = new RestTemplate();
                 restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
                 restTemplate.getMessageConverters().add(
                         new MappingJackson2HttpMessageConverter());
                 WeekForecast weekForecast = restTemplate.getForObject(url, WeekForecast.class);
-                clearCache();
+                if(weekForecast != null)
+                    clearCache();
                 Log.i("WSX", "onStartCommand: found  internet access");
                 return weekForecast;
             }else {
