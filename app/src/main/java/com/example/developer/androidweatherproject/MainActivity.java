@@ -252,7 +252,6 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
 
     private void setWeekForecastIcons(){
         ArrayList<String> weekDaysIcons = getWeatherForecastList.get("main");
-        Log.i("WSX", "setWeekForecastIcons  icons "+weekDaysIcons);
         if(!weekDaysIcons.isEmpty() && !iconsTextViewList.isEmpty()){
             if(weekDaysIcons.size() > 5){
                 weekDaysIcons.remove(0);
@@ -264,22 +263,18 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
 
                     if(weekDaysIcons.get(i).toString().contains(CLEAR)){
                         iconsTextViewList.get(i).setImageResource(R.drawable.clear2x);
-                        Log.i("WSX", "setWeekForecastIcons  cond "+weekDaysIcons.get(i));
                     }else if(weekDaysIcons.get(i).toString().contains(CLOUDS)){
                         iconsTextViewList.get(i).setImageResource(R.drawable.partlysunny2x);
-                        Log.i("WSX", "setWeekForecastIcons  cond "+weekDaysIcons.get(i));
                     }else if(weekDaysIcons.get(i).toString().contains(RAIN)){
                         iconsTextViewList.get(i).setImageResource(R.drawable.rain2x);
-                        Log.i("WSX", "setWeekForecastIcons  cond "+weekDaysIcons.get(i));
                     }
 
-                    Log.i("WSX", "setWeekForecastIcons  day "+i);
                 }
             }else {
-                Log.i("WSX", "setWeekForecastIcons: something went wrong size does not match weekDaysIcons.size()"+weekDaysIcons.size()+"|"+iconsTextViewList.size());
+                startErrorActivity();
             }
         }else {
-            Log.i("WSX", "setWeekForecastIcons: something went wrong list empty");
+            startErrorActivity();
         }
 
     }
@@ -287,7 +282,6 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
     private void setWeekForecastTemps(){
 
         ArrayList<String> weekDaysTemp = getWeatherForecastList.get("temp");
-        Log.i("WSX", "setWeekForecastTemps  temps "+weekDaysTemp);
         if(!weekDaysTemp.isEmpty() && !tempsTextViewList.isEmpty()){
             if(weekDaysTemp.size() > 5){
                 weekDaysTemp.remove(0);
@@ -302,11 +296,10 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
                     Log.i("WSX", "setWeekForecastTemps  day "+i+" "+weekDaysTemp.get(i));
                 }
             }else {
-                Log.i("WSX", "setWeekForecastTemps: something went wrong size does not match ");
-                Log.i("WSX", "setWeekForecastIcons: something went wrong size does not match weekDaysIcons.size()"+weekDaysTemp.size()+"|"+iconsTextViewList.size());
+             startErrorActivity();
             }
         }else {
-            Log.i("WSX", "setWeekForecastTemps: something went wrong list empty");
+            startErrorActivity();
         }
 
     }
@@ -393,8 +386,6 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
             currentForecastHour -= 2;
         }
         int futureForecastHour = currentHour;
-        Log.i("WSX", "calculateForecastHours: futureForecastHour hour "+futureForecastHour);
-        Log.i("WSX", "calculateForecastHours: currentForecastHour hour "+currentForecastHour);
         return new int[]{ futureForecastHour , currentForecastHour};
     }
 
@@ -441,29 +432,20 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
     }
     private void updateWeatherInfo(){
 
-
         int futureForecastHour = calculateForecastHours()[0];
-
-
-
-        Log.i("WSX", "updateWeatherInfo: futureForecast hour "+futureForecastHour);
 
 
 
         Intent updateIntent = new Intent(this, UpdateWeatherService.class);
         PendingIntent alarmIntent = PendingIntent.getService(this, 0, updateIntent, 0);
-
         AlarmManager manager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
 
-        long interval =  60 * 1000;  //60 * 60 * 1000 * 3; //180 minutes
-        String timeTillUpdate = getNxtForecastDate(futureForecastHour);
+        long interval =  61 * 60 * 1000 * 3; //181 minutes
         Calendar timeTillUpdateCal = getNxtForecastCalender(futureForecastHour);
         long timeTillUpdateLong = timeTillUpdateCal.getTimeInMillis();
 
 
-        Log.i("WSX", "updateWeatherInfo: timeTillUpdate "+timeTillUpdate);
-
-        manager.setRepeating(AlarmManager.RTC_WAKEUP, 10000, interval, alarmIntent); //update every three hours
+        manager.setRepeating(AlarmManager.RTC_WAKEUP, timeTillUpdateLong, interval, alarmIntent); //update every three hours
 
     }
 
@@ -491,10 +473,6 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
         }else {
             startErrorActivity();
         }
-
-        Log.i("WSX", "updateWeatherInfo: currentForecast hour "+currentForecastHour);
-        Log.i("WSX", "updateWeatherInfo: currentForecastDate "+currentForecastDate);
-        Log.i("WSX", "displayWeatherInfo: "+current+" "+min+" "+max);
         ttvCurrentTempHeader.setText(current+DEGREES_SYMBOL);
         ttvCurrent.setText(current+DEGREES_SYMBOL);
         ttvMax.setText(max+DEGREES_SYMBOL);
@@ -505,36 +483,33 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(getResources().getColor(color)); // .setStatusBarColor(R.color.colorSunny);
+            window.setStatusBarColor(getResources().getColor(color));
         }
     }
 
     private void displayWeekDays(){
         ArrayList<String> weekDays = getWeatherForecastList.get("days");
         if(!weekDays.isEmpty() && !daysTextViewList.isEmpty()){
-            //weekDays.remove(0);
             if(weekDays.size() > 5){
                 weekDays.remove(0);
             }
             if(weekDays.size() == daysTextViewList.size()){
                 for(int i = 0; i < daysTextViewList.size(); i++){
                     daysTextViewList.get(i).setText(weekDays.get(i));
-                    Log.i("WSX", "day "+i);
+
                 }
             }else {
-                Log.i("WSX", "displayWeekDays: something went wrong size does not match");
+                startErrorActivity();
             }
         }else {
-            Log.i("WSX", "displayWeekDays: something went wrong list empty");
+            startErrorActivity();
         }
 
     }
 
 
     public static boolean isNetworkAvailable() {
-
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        Log.i("WSX", "isNetworkAvailable: activeNetworkInfo != null "+(activeNetworkInfo != null));
         return activeNetworkInfo != null;
     }
 
@@ -556,22 +531,18 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
     private void fetchData(){
         if(isNetworkAvailable()){
             if(!MainActivity.getString("lat").equals("0") && !MainActivity.getString("lon" ).equals("0")){
-                Log.i("WSX", "fetchData one: lat "+getString("lat")+" lon "+getString("lon"));
                 new HttpRequestTask(this).execute(getString("lat"),getString("lon"));
             }else {
-                Log.i("WSX", "fetchData zero: lat "+getString("lat")+" lon "+getString("lon"));
                 getLastKnownLocation(new OnlocationListener() {
                     @Override
                     public void onLocationComplete() {
                         new HttpRequestTask(MainActivity.this).execute(getString("lat"),getString("lon"));
-                        Log.i("WSX", "fetchData done: lat "+getString("lat")+" lon "+getString("lon"));
+
                     }
                 });
             }
-            Log.i("WSX", "fetchData: lat "+getString("lat")+" lon "+getString("lon"));
-            Log.i("WSX", "fetchData: internet connection ");
         }else{
-            Log.i("WSX", "fetchData: no internet connection ");
+            startErrorActivity();
         }
     }
 
@@ -601,9 +572,6 @@ public class MainActivity extends AppCompatActivity implements HttpRequestTask.O
                     // contacts-related task you need to do.
                     Log.i("WSX", "onRequestPermissionsResult: Granted");
                     fetchData();
-                } else {
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
                 }
                 return;
             }
